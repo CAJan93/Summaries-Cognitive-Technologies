@@ -13,9 +13,8 @@
 
 \authorrunning{J. Mensch}
 
-\institute{University of Potsdam, Am Neuen Palais 10, 14469 Potsdam, Germany\\ 
-\email{jan.mensch@uni-potsdam.de}\\
-\url{https://www.uni-potsdam.de/}}
+\institute{University of Potsdam\\ 
+\email{jan.mensch@uni-potsdam.de}\\}
 
 
 %
@@ -30,9 +29,11 @@ This is a summary of the paper \textit{\papertitle}. The paper provides an overv
 
 \section{Introduction}
 % \lettrine{O}{nce} 
-This article is a summary of \textit{\papertitle} \cite{janhunen2016answer}. We assume that the reader is familiar with Answer Set Programming if that is not the case, we recommend \cite{erdem2016applications}. 
+This article is a summary of \textit{\papertitle} \cite{janhunen2016answer}. We assume that the reader is familiar with Answer Set Programming. If that is not the case, we recommend \cite{erdem2016applications}. 
 
 The publication gives an overview of the ASP paradigm, compares it to other approaches, provides a brief overview of its computational model and discusses possibilities for the interoperability of ASP solvers. The authors also demonstrate that ASP can be used to solve computationally hard problems. These concepts are explained with the help of examples and code snippets. Over the course of the article, \authorquote demonstrate the power of ASP and that the paradigm is able to express difficult, \myquote{real-world} problems. 
+
+This article will compare ASP to other paradigms and languages, explain briefly how solving works and highlight the importance of translation based ASP. 
 
 % What?
 % An overview of the ASP paradigm, a comparison with other approaches, an introduction to how ASP is able to solve problems. A demonstration that ASP can be used to solve computationally hard problems and is rich in its expressiveness. An introduction to the interoperability of solvers. 
@@ -41,7 +42,7 @@ The publication gives an overview of the ASP paradigm, compares it to other appr
 % Concepts discussed in the paper are explained with the help of examples and code snippets.  
 
 % Why? 
-Because ASP is able to solve computationally hard problem in a declarative fashion. This enables a developer to reason only about the problem, the question of how to solve it will be managed by the solver. 
+% Because ASP is able to solve computationally hard problem in a declarative fashion. This enables a developer to reason only about the problem, the question of how to solve it will be managed by the solver. 
 
 
 
@@ -50,7 +51,7 @@ Because ASP is able to solve computationally hard problem in a declarative fashi
 
 \authorquote compare ASP to other paradigms and languages. Among them are constraint programming (CP) and Prolog. According to the authors ASP is similar to CP, because problems are defined by constraints. Rules in ASP, however, are more expressive than constraints in CP. Rules are allowed to be defined based on other rules. This enables ASP to support recursion, something that CP is not able to express. 
 
-Prolog is a logical programming language. In contrast to ASP, Prolog is not fully declarative, which meant that the order of rules and literals matter, which is not the case in ASP. An additional difference is that Prolog is used to find proofs or answer substitutions, while ASP is used to find a set of possible solutions for a given problem instance.
+Prolog is a logical programming language. In contrast to ASP, Prolog is not fully declarative, which means that the order of rules and literals matters, which is not the case in ASP. An additional difference is that Prolog is used to find proofs or answer substitutions, while ASP is used to find a set of possible solutions for a given problem instance.
 
 
 \begin{comment}
@@ -66,15 +67,10 @@ Prolog is a logical programming language. In contrast to ASP, Prolog is not full
 \section{Problem solving in ASP}
 
 % what? 
-The article explains how a problem is solved using ASP. \rom{1} For this, a developer  has to represent the problem as a program and provide facts\footnote{Facts represent an instance of the problem.}. \rom{2} Program and facts are then \myquote{grounded}, which might be compared to preprocessing in other languages. An example: The code $1\{a(C, ~ E): ~ d(E)\}1 ~ \ASPif ~ f(C).$ and the facts $f(1).$, $d(g).$, $d(h).$, $d(i).$ would be \myquote{grounded} to $1\{a(1, ~ g), ~ a(1, ~ h), ~ a(1, ~ i)\}1$. This grounding makes it possible for the solver to calculate the solution for a given problem instance. It also has other advantages, which will be mentioned in \sectionref{sec:translation}.
+The article explains how a problem is solved using ASP. \rom{1} For this, a developer  has to represent the problem as a program and provide facts\footnote{Facts represent an instance of the problem.}. \rom{2} The Program and the facts are then \myquote{grounded}, which might be compared to preprocessing in other languages. An example: The code \verb|1{a(C, E): d(E)}1 :- f(C).| and the facts \verb|f(1).|, \verb|d(g).|, \verb|d(h).|, \verb|d(i).| would be \myquote{grounded} to \verb|1{a(1, g), a(1, h),| \verb|a(1, i)}1|. This grounding makes it possible for the solver to calculate the solution for a given problem instance. It also has other advantages, which will be mentioned in \sectionref{sec:translation}. \rom{3} The resulting program is then passed to a solver, which will output possible solutions for this instance of the problem. In the example above, the solver would have to pick exactly one of \verb|a(1, g), a(1, h)| and \verb|a(1, i)|. 
 
 
-\rom{3} The resulting program is then passed to a solver, which will output possible solutions for this instance of the problem. In the example above, the solver would have to pick exactly one of $a(1, ~ g), ~ a(1, ~ h)$ and $a(1, ~ i)$. 
-
-
-\authorquote further explain the syntax and the semantic of the language with the help of two examples: The seating problem\footnote{Problem where people have to be seated at tables and only those who like each other should sit at the same table.} and the locking design problem (LDP). The later is a planning problem  in which a building should be equipped with evacuation routes. This problem can be expressed as an optimization problem, e.g. when the number of doors or the path to an exit should be minimized. The examples are also used to explain recursion and default values in ASP. 
-
-The LDP also showcases that ASP can be used to approach computationally hard problems since it was shown that it is a NP-Complete problem\footnote{NP-complete is a subset of NP and the intersection of NP and NP-hard. It represents a set of problems to which all problems in NP can be reduced to in polynomial time using a deterministic Turing machine.}, by reducing Exact-3-SAT, an NP-problem, to LDP. 
+\authorquote further explain the syntax and the semantics of the language with the help of two examples: the seating problem\footnote{In this problem people have to be seated at tables and only those who like each other should sit at the same table.} and the locking design problem (LDP). The latter is a planning problem  in which a building should be equipped with evacuation routes. This problem can be expressed as an optimization problem, where the number of doors or the path to an exit should be minimized. The examples are also used to explain recursion and default values in ASP. The LDP also showcases that ASP can be used to approach computationally hard problems since it was shown that it is a NP-Complete problem\footnote{A problem is said to be NP-complete if each problem in NP is reducible to it \cite[p.~43]{np_complete}.}, by reducing Exact-3-SAT, an NP-problem, to LDP. 
 
 
 
@@ -85,7 +81,7 @@ Explains details about syntax
 
 Syntax and semantic of the language is explained by example of the seating problem. By providing the code that is solving an instance of this problem and then giving the intuitive meaning of the code to the reader. Other example is locking design. How to define defaults (Exit of house is room 1). How to define recursion: Rooms are reachable indirectly. Also given an example of how to search for the minimal number of doors needed: Set a limit of doors available and increase this limit over time. 
 
-Example also shows that ASP can be used for computationally difficult problems. Janhunen and Niemelä show that the locking design problem (ldp) is NP-Complete\footnote{NP-complete is a subset of NP and the intersection of NP and NP-hard. It represents a set of problems to which all problems in NP can be reduced to in polynomial time using a deterministic Turing machine.}. This is by reducing Exact-3-SAT, an NP-problem, to ldp in polynomial time. 
+Example also shows that ASP can be used for computationally difficult problems. Janhunen and Niemelä show that the locking design problem is NP-Complete\footnote{NP-complete is a subset of NP and the intersection of NP and NP-hard. It represents a set of problems to which all problems in NP can be reduced to in polynomial time using a deterministic Turing machine.}. This is by reducing Exact-3-SAT, an NP-problem, to ldp in polynomial time. 
 \end{comment}
 
 
@@ -95,7 +91,7 @@ Example also shows that ASP can be used for computationally difficult problems. 
 
 \section{Translation based ASP} \label{sec:translation}
 
-ASP can be translated into a different logical representation which can be useful, if one wants to solve it with different (or multiple) solvers. This translation can be accomplished by \rom{1} \myquote{grounding} program and facts into a format that different solvers are able to understand or \rom{2} translating it into a different logical representation altogether.
+ASP can be translated into a different logical representation which can be useful, if one wants to solve it with different (or multiple) solvers. This translation can be accomplished by \rom{1} \myquote{grounding} a program and facts into a format that different solvers are able to understand or \rom{2} translating it into a different logical representation altogether.
 
 Both can be used to make the interoperability of different solvers and languages easier since the intermediate representation serves as a  common interface among them. Being able to use different (or multiple) solvers greatly increases the power of ASP. 
 
