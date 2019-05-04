@@ -1,0 +1,91 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+\newcommand{\papertitle}{Experimenting with robotic intra-logistics domains} 
+\newcommand{\authorquote}{Gebser Et. al}
+
+\begin{document}
+
+\title{A Summary of \papertitle}
+
+
+
+\author{Jan Mensch}
+
+\import{../}{header.tex}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle}. Summary of Introdution and conclusion.
+
+
+
+\end{abstract}
+
+\section{Introduction}
+% \lettrine{O}{nce} 
+This article is a summary of \textit{\papertitle} \cite{janhunen2016answer}. We assume that the reader is familiar with Answer Set Programming if that is not the case, we recommend \cite{erdem2016applications}. 
+
+
+
+\section{Notes}
+
+makespan: Total lenght of schedule.
+
+\begin{itemize}
+    \item Introduction of asprilo 
+    \item framework for benchmarking logical programmin. Complex scenarios like intra-logistics
+    \item 1 intro strating here
+    \item Why? Benchmarks are often classified or there are not enough examples. Missing benchmarks might slow down development of ASP
+    \item Why use the problem of intra logistics? Warehouse layout is grid-based, easy abstraction for robot movement and you can discuss many problems with this example, e.g. charging actions or order frequencies. Because of this you can produce benchmarks with different complexity. 
+    \item asprilo component: benchmark generator, solution checker, visualizer, reference encoding 
+    \item 2 asprilos genarator 
+    \item description of problem domain. Warehouse layout, definition of highways, shelfes, picking stations and storage locations. 
+    \item Round based. Each robot can do one action per unit of time /round
+    \item domain A: account for quantities in shelf
+    \item domain B: simplifies A, by ignoring quantities of the products
+    \item domain C: One delivery action can fulfill multiple orders
+    \item domain M: resemble multi-agent path finding scenarios. Concerns only move actions. Shelfs remain on the spot. Robots have to find them.
+    \item combination of domains. $A^M$, $B^M$, $C^M$ only singleton orders and one product per shelf. 
+    \item instance generator: generate problem instance. Implemented in ASP, solved with multi-shot solving, controlled with Python API of clingo
+    \item why multishot/incremental solving? First:  You can narrow down the search space. E.g. shelfs should only be placed on places where they are allowed to. Second: Threshold based domain-splitting. 
+    \item a solution for a problem instance is a parallel plan, represented by a list of actions
+    \item 3 visualization component 
+    \item going through visualization capabilities. It can also do graphical editing. 
+    \item 4 example encogings 
+    \item Shows example encoding of scenario M
+    \item 5 experimenting 
+    \item All sorts of results from the experimenting stuff 
+    \item 6 Related work
+    \item other problems, that can be solved with logical programming
+    \item Multi-agent path finding (MAPF) problem is quite important: collusion-free route fro each agent so that total time needed to fulfill task is minimal. Domain M corresponds to MAPF. TAPF as generalization of MAPF (grouping agents into teams) and G-TAPF is generalization of TAPF (number of tasks can be $>$ than number of agents). Asprillo is genereric and can thus be extended to include TAPF and G-TAPF
+    \item 7 conclusion
+    \item asprilo provides basic infrastructure for experimental studies of dynamic systems. 
+    \item extendable in various ways (e.g. by introducing preferences to orders).
+    \item experimental plattform for solving problems and benchmarking 
+\end{itemize}
+
+
+
+\section{Questions}
+
+
+\begin{itemize}
+    \item Why do you use multi-shot solving for the instance generator? I do not understand the domain splitting. \textbf{Answer:} You want the instances to have some structure. So the instance should be similar to the instances that exist in reality. You need threshold based domain splitting to improve performance. You set variables in multiple steps. To reduce complexity. 
+    \item \textbf{Notes:} Combinatorial problems. Place 55 shelves on 100 spots. Hard problem: Hard! First shelf on 100 spots, seconds on 99 spots... So 100 * 99 * 98 * ... * 45. So 100! - 45! which is just horrible :( 
+    \item A solution is a list of actions. Will the generator create all possible solutions for a given problem instance? Is that not way too much work? \textbf{Answer:} No. The solver gets a generated solution and takes ASP rules. It will check solutions against the constraints.
+    \item singleton order means one item per order? \textbf{Answer:} Yes. Oder consists of a pair of Item and Quantity. In a singleton the quantity is always 1.  
+    \item Domains with lower case a. You will assign a task to the robots at first and then do the solving. This is domain splitting. Since you do domain splitting, the search space is reduced. Problem is that we might do a bad assignment. So we might not find the optimal solution. 
+\end{itemize}
+
+
+
+\section{conclusion}
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}

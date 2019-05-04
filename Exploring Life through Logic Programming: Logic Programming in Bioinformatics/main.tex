@@ -1,0 +1,136 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+\newcommand{\papertitle}{Exploring Life through Logic Programming: Logic Programming in Bioinformatics} 
+\newcommand{\authorquote}{Palù Et. al}
+
+
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\usepackage{mathtools} % for arrows with text over/under it compare https://tex.stackexchange.com/questions/103988/rightarrow-with-text-above-it
+
+
+
+
+\begin{document}
+%
+\title{A Summary of \papertitle}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Jan Mensch}
+%
+\authorrunning{J. Mensch}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+
+\institute{University of Potsdam, Am Neuen Palais 10, 14469 Potsdam, Germany\\ 
+\email{jan.mensch@uni-potsdam.de}\\
+\url{https://www.uni-potsdam.de/}}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary of the paper \papertitle. You can read the paper here \cite{formisanoexploring}.  It was written by \authorquote.
+
+\end{abstract}.
+
+
+\section{Notes}
+
+
+\begin{itemize}
+    \item \textbf{begin Introduction}
+    \item large data. 
+    \item Definition Bioinformatics: Computer Science that deals with modeling/solving problems from biology. Classiry clasication of Problems by how hard they are: (1) Applications for as a support infrastructure (2) Efficently solvable, but very large datasets (e.g. string matching problems \cite{gonnet2004some}) (3) hard problems (NP complete or worse). 
+    \item Classification of problems by problem target: (a) Genomics. Investigate genomes, often very big data, like DNA and RNA sequences. (b) Structural. Smaller DS than in genomics. Try to predict structures, e.g. the structure of a protein foling, (c) Systems studies: Interaction of components in bio systems. Often more computationally complex algorithms. 
+    \item why ASP in bioinformatics? (1) Easy model modification, if you gain additional knowledge (2) Hard to capture complexity of problems with other paradigms. 
+    
+    \item \textbf{Bio stuff}
+    \item transcription: DNA to RNA
+    \item translation: RNA to Protein
+    \item DNA: 4 kind of nucleotides: Adenin, Cytosine, Guanine, Thymine
+    \item nucleotides can be combined into large polymeric (protein with many repeating subcomponents) with (unlimited) length. DNA strings are between $10^6$ and $10^{10}$ nucleotides. 
+    \item complementary string: $s \in \{A,C,G,T\}^*$ with $\Bar{s} = s$, with $A \leftrightarrow T$ and $G \leftrightarrow C$. $s$ and $\Bar{s}$ form a double helix.
+    \item DNA strings are very similar. Only 1 in 1000 nucleotides differ in humans. 
+    \item Genes: Fraction of DNA that is encoding for proteins. Humans have around 21.000 genes. 
+    \item Genome: Set of all genes. 
+    \item RNA. RiboNucleic Acid. $r \in \{A, C, G, U\}$. $U$ (Uracil) is the sublement for $T$ in $s$.
+    \item $r$ is obtained by copying part of $s$
+    \item RNA than folds based on what pairs connect. Promarely A-U and C-G, but also U-G. U-G is not so stable. Which nucleotides pair up influences the shape and stability of the structure.
+    \item If you can predict how nucleotides in an $r$ team-up, you can predicts how it folds (what shape it has) and thus how it behaves. 
+    \item Starting here about how translation works (structural studies)... 
+    \item Multiple codons (3 letter combinations) in $r$ encode for one amino-acid.
+    \item there are $4^3 = 64$ different codons. Only 20 different amino acids. Various codons encode same amino acid. You got other codons that encode things like start and stop of protein encoding sequence.
+    \item primary sequence: Sequence of amino acids that make up a protein. 
+    \item protein folds based on its primary sequence. This shape determines its function. 
+    \item Protein has 10 - 1000 amin acids. 300 on average. Amino acid has 7 - 24 atoms. Arranging these atoms in a 3D space is beyond computational power.
+    \item Starting here about system studies...
+    \item interactions not studies on atomic level, but higher abstracted, because getting to complex and we do not have enough knowledge. Level of abstraction determines what we can study. 
+    \item System biology: relations between components through graphs to predict behaviour. Goals: (a) analyze interactions, (b) predict behaviour (c) integrate bknowlege that we have from experiments. Cause and affect relations in graphs are the things that we can model with logical programming. 
+    
+    
+    \item \textbf{RNA secondary structure prediction}
+    \item $r = \{A,C,G,U\}^*$
+    \item $r$ will fold in space. Pairs of bases will interact. You can describe secondary structure by listing pairs of bases that are interacting. Paris will interact either normal pairs or U-G pairs. 
+    \item primary structure: Sequence of bases
+    \item secondary structure: Which bases interact with each other
+    \item You are predicting the secondary structure based on the energetic relationships of bases. You are abstracting from actual folding.
+    \item $a \leftrightarrow b$ means ``a is true if b is true and b is true if a is true''.
+    \item $E_1 = -|P|$. If you minimize this, you just try to maximize the number of connections. This will be the tightest packing of the protein.  
+    \item $E_2 = c_1(n-|P|) + c_2|AU - 0.35|P|| + c_3|CG - 0.53|P||$. Try to mimic the statistical distribution of pairs by applying weights. $c_1(n-|P|)$ We weight the number of bases that do not have a pair. $c_2|AU - 0.35|P||$ We assume that usually there are 35\% A-U pairs. So this term is minimal, if there are actually 35\% A-U pairs. $c_2$ expresses how important is is to us that the number of A-U pairs is as it usually is. 
+    \item \textbf{5.2 ASP code}
+    \item line 3: Every base can be paired with 0 or 1 other base. 
+    \item line 4: How can the predicate sequence\_index have 3 arguments now? Do we do overloading in ASP? Line 4 means that one base can only pair with one other base (not) more.
+    \item line 5: pairings go both ways
+    \item line 6: no pairing with yourself
+    \item line 7 and 8: remove wrong pairings
+    \item line 12 and 13: maximize the number of paired bases
+    
+    
+    
+    \item \textbf{5.3}
+    \item there are more energy functions. For example you would try to max the number of special kind of folds that a secondary structure makes. Also other functions that mimic certain distributions of bases.
+    \item Guessing secondary structure is NP-complete. Also proven by reducing 4-SAT to this problem. 
+    \item pseudo-knot: if (i, j) and (l, k), then structure has to be i,l,j,k or k,i,l,j. Possibly with many bases in between. If you say that your secondary structure does not contain pseudo knots, than you can have algorithms (dynamic programming) that can solve this in polynomial time $O(n^2)$ or $O(n^4)$, depending on the energy function. 
+    
+    
+    \item \textbf{Protein structure prediction}
+    \item \textbf{Protein model:} classify 20 different amino acids into 2 groups h (hydopic) and p (polar). \textbf{Spatial model:} 2D instead of 3D. 
+    \item $S = {h,p}^*$. Distance between $s_i$ and $s_j$ is constant. They cannot overlap. 
+    \item \textbf{Problem:} We are looking at h-h-contacts. We can formulate this as a decision problem: If you have $S$ and an integer $k$, is there a folding with at least $k$ $h-h-contacts$?. Problem is NP-complete. 
+    \item $\omega : \{1,...,n\} \longrightarrow \mathbb{N}^2$. You map each index in $S$ to a pair of numbers
+    \item Energy function: Maximal number of h-h-connections, that have property next. This is modeling the fact that p amino-acids stay outside and h amino-acids stay in cantact with protein (inside) 
+    \item next returns 1 if it holds and 0 otherwise
+    \item Observation: $s_i$ and $s_j$ can be in contact if $|i - j| \mod 2 = 1$
+    \item What you are looking for are edges. E.g. $(\langle 1, 2 \rangle, \langle 1,3 \rangle )$. Here one base is connected with two neighboring different bases
+    \item Do not use ASP encoding for protein structure prediction in presentation!
+    
+    \item \textbf{conclusion} 
+    \item just an overview of what was sad
+    
+\end{itemize}
+
+\section{Questions}
+
+\begin{itemize}
+    \item Page 19, code line 1 and 4. How can the predicate sequence\_index have 3 arguments now? Do we do overloading in ASP?
+    \item Page 22, formula 1: What do they mean with the next function?. \textbf{Under what circumstance does next hold?}. Provide Example!
+    \item A base $b$ with index $i$ that does not pair will look like this? $\omega(i) = \langle i, i \rangle$ ???
+\end{itemize}
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
+

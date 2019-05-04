@@ -1,0 +1,184 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+
+\newcommand{\papertitle}{The Answer Set Programming Paradigm} 
+\newcommand{\authorquote}{Janhunen and Niemelä~}
+
+\begin{document}
+
+\title{A Summary of \papertitle}
+
+\author{Jan Mensch}
+
+\authorrunning{J. Mensch}
+
+\institute{University of Potsdam, Am Neuen Palais 10, 14469 Potsdam, Germany\\ 
+\email{jan.mensch@uni-potsdam.de}\\
+\url{https://www.uni-potsdam.de/}}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle}. The paper provides an overview of Answer Set Programming (ASP) and its capabilities. It explains the concept of the paradigm with the help of examples. The article shows that one is able to express and solve computationally hard problems with ASP. It highlights the advantages of translating ASP-program into an intermediate format and using different (or multiple) solvers to solve it.
+
+
+
+\end{abstract}
+
+\section{Introduction}
+% \lettrine{O}{nce} 
+This article is a summary of \textit{\papertitle} \cite{janhunen2016answer}. We assume that the reader is familiar with Answer Set Programming if that is not the case, we recommend \cite{erdem2016applications}. 
+
+The publication gives an overview of the ASP paradigm, compares it to other approaches, provides a brief overview of its computational model and discusses possibilities for the interoperability of ASP solvers. The authors also demonstrate that ASP can be used to solve computationally hard problems. These concepts are explained with the help of examples and code snippets. Over the course of the article, \authorquote demonstrate the power of ASP and that the paradigm is able to express difficult, \myquote{real-world} problems. 
+
+% What?
+% An overview of the ASP paradigm, a comparison with other approaches, an introduction to how ASP is able to solve problems. A demonstration that ASP can be used to solve computationally hard problems and is rich in its expressiveness. An introduction to the interoperability of solvers. 
+
+% How?
+% Concepts discussed in the paper are explained with the help of examples and code snippets.  
+
+% Why? 
+Because ASP is able to solve computationally hard problem in a declarative fashion. This enables a developer to reason only about the problem, the question of how to solve it will be managed by the solver. 
+
+
+
+
+\section{ASP in Comparison}
+
+\authorquote compare ASP to other paradigms and languages. Among them are constraint programming (CP) and Prolog. According to the authors ASP is similar to CP, because problems are defined by constraints. Rules in ASP, however, are more expressive than constraints in CP. Rules are allowed to be defined based on other rules. This enables ASP to support recursion, something that CP is not able to express. 
+
+Prolog is a logical programming language. In contrast to ASP, Prolog is not fully declarative, which meant that the order of rules and literals matter, which is not the case in ASP. An additional difference is that Prolog is used to find proofs or answer substitutions, while ASP is used to find a set of possible solutions for a given problem instance.
+
+
+\begin{comment}
+\begin{itemize}
+     \item Prolog vs. ASP: Prolog is logic programming. ASP is fully declarative, so order of rules/literals does not matter. Prolog is used to find proofs or answer substitutions, while ASP is used to find the complete solution. 
+   \item ASP similar to constraint programming (CP), because problems are defined by constraints and systems try to find solutions to that. ASP allows to construct a rule out of simpler rules and having rules also allows for things that are not possible in CP, like recursive constraints. 
+\end{itemize}
+\end{comment}
+
+
+
+
+\section{Problem solving in ASP}
+
+% what? 
+The article explains how a problem is solved using ASP. \rom{1} For this, a developer  has to represent the problem as a program and provide facts\footnote{Facts represent an instance of the problem.}. \rom{2} Program and facts are then \myquote{grounded}, which might be compared to preprocessing in other languages. An example: The code $1\{a(C, ~ E): ~ d(E)\}1 ~ \ASPif ~ f(C).$ and the facts $f(1).$, $d(g).$, $d(h).$, $d(i).$ would be \myquote{grounded} to $1\{a(1, ~ g), ~ a(1, ~ h), ~ a(1, ~ i)\}1$. This grounding makes it possible for the solver to calculate the solution for a given problem instance. It also has other advantages, which will be mentioned in \sectionref{sec:translation}.
+
+
+\rom{3} The resulting program is then passed to a solver, which will output possible solutions for this instance of the problem. In the example above, the solver would have to pick exactly one of $a(1, ~ g), ~ a(1, ~ h)$ and $a(1, ~ i)$. 
+
+
+\authorquote further explain the syntax and the semantic of the language with the help of two examples: The seating problem\footnote{Problem where people have to be seated at tables and only those who like each other should sit at the same table.} and the locking design problem (LDP). The later is a planning problem  in which a building should be equipped with evacuation routes. This problem can be expressed as an optimization problem, e.g. when the number of doors or the path to an exit should be minimized. The examples are also used to explain recursion and default values in ASP. 
+
+The LDP also showcases that ASP can be used to approach computationally hard problems since it was shown that it is a NP-Complete problem\footnote{NP-complete is a subset of NP and the intersection of NP and NP-hard. It represents a set of problems to which all problems in NP can be reduced to in polynomial time using a deterministic Turing machine.}, by reducing Exact-3-SAT, an NP-problem, to LDP. 
+
+
+
+\begin{comment}
+\subsection{other things}
+
+Explains details about syntax
+
+Syntax and semantic of the language is explained by example of the seating problem. By providing the code that is solving an instance of this problem and then giving the intuitive meaning of the code to the reader. Other example is locking design. How to define defaults (Exit of house is room 1). How to define recursion: Rooms are reachable indirectly. Also given an example of how to search for the minimal number of doors needed: Set a limit of doors available and increase this limit over time. 
+
+Example also shows that ASP can be used for computationally difficult problems. Janhunen and Niemelä show that the locking design problem (ldp) is NP-Complete\footnote{NP-complete is a subset of NP and the intersection of NP and NP-hard. It represents a set of problems to which all problems in NP can be reduced to in polynomial time using a deterministic Turing machine.}. This is by reducing Exact-3-SAT, an NP-problem, to ldp in polynomial time. 
+\end{comment}
+
+
+
+
+
+
+\section{Translation based ASP} \label{sec:translation}
+
+ASP can be translated into a different logical representation which can be useful, if one wants to solve it with different (or multiple) solvers. This translation can be accomplished by \rom{1} \myquote{grounding} program and facts into a format that different solvers are able to understand or \rom{2} translating it into a different logical representation altogether.
+
+Both can be used to make the interoperability of different solvers and languages easier since the intermediate representation serves as a  common interface among them. Being able to use different (or multiple) solvers greatly increases the power of ASP. 
+
+\section{Conclusion}
+
+\textit{\papertitle} provides an overview of ASP and shows that it is a powerful tool. The article shows that the expressiveness of the paradigm can be used to solve computationally hard problems. It also provides an overview of translation based ASP and shows that this is a concept that can greatly increase the capabilities of ASP. 
+
+
+
+
+\begin{comment}
+
+shows that ASP is a powerful tool 
+recursion 
+default values 
+computationally hard problems
+ASP can be used with translation approaches in order to make it solvable with different solvers
+Highlight the advantages of ASP over other paradigms and languages
+
+
+% how? 
+Isolate/translate the constraints that are not calculatable with ASP solver and pass to different solver. Use two or more solvers to solve in cooperation to solve overall problem. 
+
+(1) Ground program into a format that is solvable by different solvers. 
+
+(3) Translate it into an intermediate representation (SAP modulo acyclicity). 
+
+
+% why? 
+Because ASP can express constraints that are not solvable using ASP solvers.
+
+(1) Because we can now combine an expressive paradigm like ASP with already available solvers, which makes for a powerful combination. 
+
+(3)This would make interoperability of languages and solvers easier, since they have a common interface. 
+
+
+
+\begin{itemize}
+    \item If there are problems which can not be solved by an ASP solver, we treat the corresponding rules differently and have them solved by a separate solver.
+    \item tranlation-based ASP: We translate an ASP program into different logic, so that it should be solved using a different solver
+    \item It is work done to propose an intermediate representation of different logical languages. This could then be passed to the actual solver. This would ease the interoperability of different logical languages/solvers
+\end{itemize}
+
+
+
+\end{comment}
+
+
+
+\begin{comment}
+
+\section{Notes}
+\begin{itemize}
+    \item Purpose of ASP paradigm is solving search and optimization problems
+    \item atom: seat(alice, 1) ''Alice is sitting at table 1''. Count-bounded sets of atoms: $l\{atom_1; ...;atomk\}u$ ``At least $l$, but no more than $u$ atoms should be true''. For this we could also write $\#count\{atom_1, ...atom_k\} > x$
+    \item Rule with empty body means head always holds $$someHead ~ \ASPif$$.Rule without body is a constraint that should not be satisfied $$\ASPif ~ \#count\{seat(P,T):person(P)\}>C, ~ tbl(T,C).$$ The constraint ``There are more people at the table than the capacity of the table'' should never be met.
+     \item You can have special rules for an instance. For example $\ASPif ~ seat(a,1)$ would mean that want to avoid that a is sitting at table 1
+    \item it is possible to count the number of answer sets. This is equivalent to counting the number of possible solutions.
+    \item Seating problem over time. It is not possible to solve that yet, because ASP does not support infinite domains (integers are infinite domain, so is time).
+    \item page 19 explains how recursive stuff works in ASP. The example is that rooms are reachable indirectly through a different room.
+    \item Introducing several optimization criteria for the evacuation planning tool. One is the number of evacuation doors should be minimized, the other is that the length of the evacuation route should be minimal.
+    \item Listing 5: We minimize the number of steps used manually. We increase s one by one to see when there is a solution found to the problem.
+    
+\end{itemize}
+
+\section{Questions}
+
+\begin{itemize}
+    \item Page 15. #count. A true statement is equal to 1 and a false statement is equal to 0, correct? This is implicit?
+    \item Could we define the importance of rule? Example with listing 1: Could we say that under no circumstances two people who dislike each other sit at the same table and in addition, if possible people who like each other should sit at the same table. 
+    \item listing 1: a, b, j are the names of the people. These are strings. Do we not need to write them as ``string''?
+    \item How exactly does the solving work. Why do we need to call a solver multiple times for one program + 1 set of instances?
+    \item does listing 3 lead to a bug, if we explicitly say exit(1)?. Than otherexit is false and default exit is set to exit(1). Do we now have two exits at room 1?
+    \item listing 4: Why do we mention pod(R3, R2). Is this not implicit since we already have evac(R3, R2)? How do we make sure that this recursion terminates and we do not go in circles? 
+\end{itemize}
+
+
+\end{comment}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
+

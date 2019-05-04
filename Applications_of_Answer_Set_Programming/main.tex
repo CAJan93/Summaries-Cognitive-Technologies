@@ -1,0 +1,154 @@
+
+\documentclass[runningheads]{llncs}
+\newcommand{\papertitle}{Applications of Answer Set Programming} 
+\usepackage{aspPackage}
+
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\usepackage{mathtools} % for arrows with text over/under it compare https://tex.stackexchange.com/questions/103988/rightarrow-with-text-above-it
+
+
+\begin{document}
+%
+\title{A Summary of \papertitle}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Jan Mensch}
+%
+\authorrunning{J. Mensch}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+
+\institute{University of Potsdam, Am Neuen Palais 10, 14469 Potsdam, Germany\\ 
+\email{jan.mensch@uni-potsdam.de}\\
+\url{https://www.uni-potsdam.de/}}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle}. The paper introduces the notation of answer set programming and explains concepts of the paradigm. It further lists various applications for the paradigm, both in research and in industry. The publication concludes with challenges that answer set programming is facing in the industrial context. 
+
+
+
+%\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+%
+%
+%
+
+\section{Definitions of Concepts}
+
+Erdem et. Al introduce various concepts of answer set programming (ASP). The introduction of these terms is done mostly implicitly by example or by a reference to a different source. The following paragraph lists definitions that were drawn as conclusions from the paper. \equationref{formulaexample} will serve as an example to illustrate various points. 
+
+
+\begin{equation}
+    \label{formulaexample}
+\ASPif ~ not ~ ok(R), ~ room(R).
+\end{equation}
+
+\begin{itemize}
+    \item A \textbf{predicate} is a part of an atom. In \equationref{formulaexample} $ok$ and $room$ are predicates.
+    \item \textbf{Atoms} are elements that will be evaluated to a boolean values. In the context of \equationref{formulaexample} $ok(R)$ and $room(R)$ are atoms. 
+    \item A \textbf{literal} is a (possibly negated) atom. A positive literal is equal to an atom and a negative literal is equal to a negation and an atom. In \equationref{formulaexample} $~ not ~ ok(R)$ is a negative literal and $room(R)$ is a positive literal. 
+    \item An \textbf{answer set} \cite{gelfond1991classical} is a set of literals. An answer set is the result of a grounded program that was passed to a solver. This set can than be queried, resulting in ``yes'', ``no'' or ``unknown'', depending on weather or not the answer set contains the query or the negation of the query. 
+    
+    An example: The program  $$\neg Q \leftarrow not ~ P. $$ can be interpreted as ``$Q$ is false, if it is unproven that $P$ is true''. The answer set in this example is $\{\neg Q\}$ The Query $Q$ will result in ``no'' and the query $P$ will result in ``unknown'', since neither $P$ nor $\ASPneg P$ is in the answer set.
+    \item \textbf{Knowledge Base (KB)} is the (implicit) knowledge an agend needs to have in order to fulfill its tasks and operate in an environment.
+    \item A \textbf{reasoner} (also called \textbf{solver}) is an application produces an answer set based on a program.
+\end{itemize}
+
+\section{Introduced Syntax}
+
+
+\begin{table}[t]
+ \caption{Notation of ASP, introduced in \papertitle}
+\label{table:notation}
+\centering
+ \begin{tabular}{|| l | @{}p{8.5cm}@{} ||}
+ \hline
+ Notation & Explanation/``Can be read as...'' \\ 
+ \hline\hline
+ $A$ & An atom, which always starts with an upper-case character. \\
+ $p(a)$ & ``$a$ has property $p$.'' \\
+ $l_i$ & A literal, can be an atom or a negated atom. \\
+ $l_1 ~ | ~ l_2$ & ``$l_1$ or $l_2$ is true.'' \\
+ $\leftarrow$ & Indicates rule. \\
+ $\underleftarrow{~+~}$ & Indicates cr-rule. \\
+$\alpha(R)$ & A collection of rules that  is obtained by replacing $\underleftarrow{~+~}$  with $\leftarrow$. \\
+head :- body & ``head holds if body holds''. \\ 
+a. & A fact. \\
+($\sigma_1, a, \sigma_2$) & While in state $\sigma_1$, action $a$ might result in a state transfer to  $\sigma_2$. \\
+$\Pi$  & A program. \\
+$\Pi^r$ & Set of rules in the program. \\
+$\Pi^{cr}$ & Cr-rules in the program. \\
+-$l_i$ & Negated $l_1$. \\
+$l_i$  :-  $not$  $l_j$ & Weak negation. ``$l_i$ is holds, unless $l_j$ is proven to be true.'' \\
+$l_i$  :-  $not$ -$l_j$ & Weak negation in combination with strong negation. ``$l_i$ is holds, unless $l_j$ is proven to be false.'' \\
+$\&g[a](b)$ & The external atom $g$, which takes the input list $a$ and outputs the list $b$. $\&$ denotes that $g$ is an external atom. \\
+$h()$ & Checks if an expression holds (is true). \\
+$\#minimize{...}$ & Optimization criteria. There are more functions available, e.g. \#maximize.  \\ % also #count 
+$min\{a(X,Y) : b(X)\}max$ & Iterate over all instances of that are of class b and put them in a. For instance $1\{a(X,Y):b(X)\}1$ with the instances b(i), b(j) and Y(1) creates the expression $1\{a(i,1), a(j,1)\}1$, The solver now has to choose either a(i,1) or a(j,1)\\
+\% comment & Some comment \\
+% :~ $travel(X,Y), link(X,Y,C),~[C,X]$ & Optimization. This is called a weak constraint. We are now trying to minimize C and X\\
+$\{a(X,Y) : b(X)\} = 1$ & This is the same as $1\{a(X,Y) : b(X)\}1$. Choose exactly one item from the list.  \\
+ \hline
+ \end{tabular}
+\end{table}
+
+The paper begins with the introduction of various terms, which are (in part) described in the section above. It introduces ASP as a mean to define a knowledge base of an agent. This KB cannot be defined with first-order logic (FOL), since FOL does not allow for defeasible reasoning. Defeasible reasoning\cite{sep} describes logic which is able to take additional information information account. Because of this the relationship between premise and conclusion is temporary and might change when more input is received. An example: An agent draws a conclusion based on some information and a model. Then the agent receives more information. Based on that he changes his conclusion. According to the paper, this intuitive reasoning is not possible using FOL. This reasoning is especially important in the context of defaults, for example: ``Assume that for object A the attribute b is true unless you encounter evidence that suggests otherwise''.
+
+
+The paper further introduces two ways of negating a statement. A strong negation -$l_i$ (``$l_i$ is not true'') and $not ~ l_i$ (``$l_i$ is assumed to be false, unless proven otherwise'').
+
+ASP uses two kinds of ``commands''. Rules ($\Pi^r$) describe the environment of the agent. A rule has the form $head  ~ \leftarrow ~ body$ , which can be interpreted as ``If $body$ is true, then $head$ must also be true''. Consistency-restoring rules ($\Pi^{cr}$ or cr-rules) are indicated with $\underleftarrow{~+~}$. They define default behaviour. In case a program is inconsistent, a cr-rule can be applied to restore consistency. 
+
+
+A program $\Pi$ is defined as a specification for answer sets. The reasoner solving $\Pi$ must find answer sets that satisfy the rules of $\Pi$ under the notion that he should only believe what he is forced to accept. A program is called inconsistent if it does not have an answer set. If a fact (input data) to a program is directly contradicting a rule, the program needs to activate a cr-rule in order to restore consistency. A cr-rule could thus be seen as a handler to exceptions. 
+
+The paper further introduces external atoms. External atoms are a way to approach hybrid reasoning, which is the integration of a low-level task into a high-level task. A high-level task could be the creation of a plan and a low-level task could be a routine inside the high-level task (e.g. checking if an assumption holds). Hybrid reasoning can be solved by using external atoms defined as $\&g[Y1, …, Yn](X1, …, Xm)$. The external atom $g$ is able to determine the values of a list of output values $(X1, ..., Xm)$ based on the input values $[Y1, ..., Yn]$. $g$ can be implemented in a language of choice. 
+
+
+An overview of all syntax introduced in \textit{\papertitle} can be found in Table \ref{table:notation}.
+
+
+
+
+\begin{comment}
+
+\section{Open Questions}
+
+After reading this paper, I still have some unanswered questions: 
+
+\begin{itemize}
+    \item Does ``axiomite'' mean that we ``give data to the model'' so that we are able to execute the program? 
+    \item Space shuttle example formula (1). The X is a variable? Similar to a variable in a function call? What would be pass to pos here? A switch and the state of a switch? What does pos return? A switch?
+    \item How can we make sure that a program terminates (I am aware of the halting problem)? Is there a way to detect infinite loops (or recursion that does not terminate)?
+    \item What is a dynamic domain? I could not find a definition for this term. 
+    \item What is the difference  between an atom and a predicate? Is it the same thing? 
+    \item Can an answer set also contain numeric values? In other words: Can we only answer decision problems or could be we write a program that outputs ``The answer to your question is 42''?
+    \item I am not sure if I got the difference between a literal and an atom right. Is my guess correct?
+\end{itemize}
+
+
+\end{comment}
+
+
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
+

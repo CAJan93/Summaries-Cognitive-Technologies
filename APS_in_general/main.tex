@@ -1,0 +1,166 @@
+\documentclass[runningheads]{llncs}
+\newcommand{\papertitle}{APS in General} 
+\usepackage{aspPackage}
+
+\newcommand{\ASPif}{\textrm{:-}}
+
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\usepackage{mathtools} % for arrows with text over/under it compare https://tex.stackexchange.com/questions/103988/rightarrow-with-text-above-it
+
+\usepackage{amsmath}
+
+\begin{document}
+%
+\title{A Summary of \papertitle}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Jan Mensch}
+%
+\authorrunning{J. Mensch}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+
+\institute{University of Potsdam, Am Neuen Palais 10, 14469 Potsdam, Germany\\ 
+\email{jan.mensch@uni-potsdam.de}\\
+\url{https://www.uni-potsdam.de/}}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary \papertitle. I will add all sorts of stuff related to the paradigm.  
+
+
+
+%\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+%
+%
+%
+
+\section{Definitions of Concepts}
+
+Conceptual stuff goes here!
+
+\begin{itemize}
+    \item An \textbf{answer set} \cite{gelfond1991classical} is a set of literals. An answer set is the result of a program that was passed to a solver. This set can than be queried, resulting in ``yes'', ``no'' or ``unknown'', depending on weather or not the answer set contains the query or the negation of the query. 
+    
+    An example: The program  $$\neg Q \leftarrow not ~ P. $$ can be interpreted as ``$Q$ is false, if it is unproven that $P$ is true''. The answer set in this example is $\{\neg Q\}$ The Query $Q$ will result in ``no'' and the query $P$ will result in ``unknown'', since neither it nor its negation is in the answer set.
+    \item \textbf{Knowledge Base (KB)} is the (implicit) knowledge an agend needs to have in order to fulfill its tasks and operate in an environment.
+    \item A \textbf{reasoner} (also called \textbf{solver}) is an application produces an answer set based on a program.
+    \item A \textbf{soft constraint} is a constraint that would be nice to met, but it is not necessary to met. It is subject to optimization. Example: In the Seating Problem, you do not want any people who dislike each other at the same table (hard constraint), but it would be nice to have people who like each other at the same table (optimization/soft constraint).  The second constraint would be written like in \equtionref{formula:hardConstraint} 
+    
+    \begin{equation}
+    \label{formula:hardConstraint}
+\begin{split}
+\ASPif ~ likes(P1,P2), ~ seat(P1,T1), ~ seat(P2,T2),\\
+  person(p1), ~ person(p2), ~ tbl(T1,\_), ~ tbl(T2,\_),\\
+  T1 ~ != ~ T2.
+\end{split}
+\end{equation}
+
+and as a soft constraint, like in \equtionref{formula:softConstraint} or \equtionref{formula:softConstraint2}
+
+\begin{equation}
+    \label{formula:softConstraint}
+\begin{split}
+\ASPsoftif~ likes(P1,P2), ~ seat(P1,T1), ~ seat(P2,T2),\\
+  person(p1), ~ person(p2), ~ tbl(T1,\_), ~ tbl(T2,\_),\\
+  T1 ~ != ~ T2. [1]
+\end{split}
+\end{equation}
+
+\begin{equation}
+    \label{formula:softConstraint2}
+\begin{split}
+\#minimize\{ 1:likes(P1,P2), ~ seat(P1,T1), ~ seat(P2,T2),\\
+  person(p1), ~ person(p2), ~ tbl(T1,\_), ~ tbl(T2,\_),\\
+  T1 ~ != ~ T2. \}
+\end{split}
+\end{equation}
+
+Both times the penalty for violating the soft constraint is 1.
+
+\end{itemize}
+
+
+\subsection{Predicate vs. Atom vs. literal}
+
+
+Use the code  $\ASPif ~ not ~ ok(R), ~ room(R).$ as an example.
+
+\begin{itemize}
+    \item A \textbf{predicate} is a part of an atom. It defines about what context we are talking. In this example $ok$ and $room$ are predicates.
+    \item \textbf{Atoms} are what will be evaluated to a boolean. In this case $ok(R)$ and $room(R)$ are atoms. 
+    \item A \textbf{literal} is a (possibly negated) atom. A positive literal is equal to an atom and a negative literal is equal to a negation plus an atom. In this example $~ not ~ ok(R)$ is a negative literal and $room(R)$ is a positive literal. 
+\end{itemize}
+
+
+\begin{table}[t]
+ \caption{Notation of ASP, introduced in \papertitle}
+\label{table:notation}
+\centering
+ \begin{tabular}{|| l | @{}p{9cm}@{} ||} 
+ \hline
+ Notation & Explanation/``Can be read as...'' \\ 
+ \hline\hline
+ $A$ & An atom, which always starts with an upper-case character. \\
+ $p(a)$ & ``$a$ has property $p$.'' \\
+ $l_i$ & A literal, can be an atom or a negated atom. \\
+ $l_1 ~ | ~ l_2$ & ``$l_1$ or $l_2$ is true.'' \\
+ $\leftarrow$ & Indicates rule. \\
+ $\underleftarrow{~+~}$ & Indicates cr-rule. \\
+$\alpha(R)$ & A collection of rules that  is obtained by replacing $\underleftarrow{~+~}$  with $\leftarrow$. \\
+head :- body & ``head holds if body holds''. \\ 
+. & A fact. \\
+($\sigma_1, a, \sigma_2$) & While in state Action $\sigma_1$, action $a$ might result in a state transfer to  $\sigma_2$. \\
+$\prod$  & A program. \\
+$\prod^r$ & Set of rules in the program. \\
+$\prod^{cr}$ & cr-rules in the program. \\
+-$l_i$ & Negated $l_1$. \\
+$l_i$  :-  $not$  $l_j$ & Weak negation. ``$l_i$ is holds, unless $l_j$ is proven to be true.'' \\
+$l_i$  :-  $not$ -$l_j$ & Weak negation in combination with negation. ``$l_i$ is holds, unless $l_j$ is proven to be false.'' \\
+$\&g[a](b)$ & The external atom $g$, which takes the input list $a$ and outputs the list $b$. $\&$ denotes that $g$ is an external atom. \\
+$h()$ & checks if an expression holds (is true). \\
+$\#minimize...$ & Optimization criteria There are more verbs, (\#count, \#min, \#max). \\ 
+$min\{a(X,Y) : b(X)\}max$ & Iterate over all instances of that are of class b and put them in a. For instance $1\{a(X,Y):b(X)\}1$ with the instances b(i), b(j) and Y(1) creates the expression $1\{a(i,1), a(j,1)\}1$, The solver now has to choose either a(i,1) or a(j,1)\\
+\% comment & some comment \\
+:~ $travel(X,Y), link(X,Y,C),~[C,X]$ & Optimization. This is called a weak constraint. We are now trying to minimize C and X\\
+$\{a(X,Y) : b(X)\} = 1$ & is the same as $1\{a(X,Y) : b(X)\}1$  \\
+\_ & wildcard \\
+ \hline
+ \end{tabular}
+\end{table}
+
+
+\section{Open Questions}
+
+After reading this paper, I still have some unanswered questions: 
+
+\begin{itemize}
+    \item a
+    \item b
+    \item c
+\end{itemize}
+
+
+
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
+

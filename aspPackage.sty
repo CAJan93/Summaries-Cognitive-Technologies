@@ -1,0 +1,24 @@
+\ProvidesPackage{aspPackage}
+
+% packages 
+\usepackage{type1cm}
+\usepackage{lettrine}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{mathtools} 
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb} % for symbol for natural numbers
+
+% things referring to ASP
+\newcommand{\ASPif}{\textrm{:-}}
+\newcommand{\ASPneg}{\textrm{-}}
+\newcommand{\ASPsoftif}{\textrm{:$\sim$}}
+
+% references 
+\newcommand{\equationref}[1]{Equation \ref{#1}}
+\newcommand{\sectionref}[1]{Section \ref{#1}}
+
+% other things 
+\newcommand{\myquote}[1]{``#1''}
+\newcommand*{\tmp}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\newcommand{\rom}[1]{(\tmp{#1})}

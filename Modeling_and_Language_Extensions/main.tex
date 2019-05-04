@@ -1,0 +1,81 @@
+\documentclass[runningheads]{llncs}
+\newcommand{\papertitle}{Modeling and Language Extensions} 
+\usepackage{aspPackage}
+
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\usepackage{mathtools} % for arrows with text over/under it compare https://tex.stackexchange.com/questions/103988/rightarrow-with-text-above-it
+
+
+
+
+\begin{document}
+%
+\title{A Summary of \papertitle}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Jan Mensch}
+%
+\authorrunning{J. Mensch}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+
+\institute{University of Potsdam, Am Neuen Palais 10, 14469 Potsdam, Germany\\ 
+\email{jan.mensch@uni-potsdam.de}\\
+\url{https://www.uni-potsdam.de/}}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary of the paper \papertitle. 
+
+
+
+%\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+%
+%
+%
+
+\section{Notes}
+
+
+\begin{itemize}
+    \item One-shot solving: Take program and instances, grounding and than solve/serching it. 
+    \item multishot solving. Interleave (verschachtelt) grounding and searching. We solve the problem step by step, e.g. by implmenting a step function that simulates the passing of one unit of time.
+    \item traveling salesperson problem: A salesperson wants to travel all cities of some set in minimal time without visiting cities twice (spanning (directed) tree with minimal cost). 
+    \item differentiation between optimization criteria and constraints that just have to be met.
+    \item We can also use :~ $travel(X,Y), link(X,Y,C),~[C,X]$ for optimization. This is called a weak constraint. We are now trying to minimize C and X. \item Emphasize again that things that are obvious to humans must be stated, like that every city only can have on predecessor. 
+    \item summary is good
+    \item Breaking up program in 4 parts: GENERATE (potential solutions), DEFINE (starting constraints) TEST (against constrainsts) and OPTIMIZE (optimization criteria). 
+    \item for one multishot solving is done by defining both the data and the goal situation. 
+    \item How to multishot: base program: Called once on init.  check program: Run on every time step. Step: Execute a step.
+\end{itemize}
+
+\section{Questions}
+
+\begin{itemize}
+    \item What does the predicate place do?
+    \item How is TSP solved under the hood? Is it depth first or breadth first?c
+    \item Am I allowed to visit a city twice in the given example? No right, since every city can only have one predecessor.
+    \item difference between DEFINE and TEST? Both are constraints that my program has to handle. Answer Define are integrity constraints, things that are implicit to humans.
+\end{itemize}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
+
