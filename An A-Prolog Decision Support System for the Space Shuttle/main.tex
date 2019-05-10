@@ -1,0 +1,65 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+\newcommand{\papertitle}{An A-Prolog Decision Support System for the Space Shuttle}
+\newcommand{\authorquote}{Nogueira \etal}
+
+\begin{document}
+
+\title{A Summary of \papertitle}
+
+\author{Jan Mensch}
+
+\authorrunning{J. Mensch}
+
+\institute{University of Potsdam\\ 
+\email{jan.mensch@uni-potsdam.de}\\}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle}\cite{nogueira2001prolog}. In it \authorquote{}   
+
+
+\end{abstract}
+
+\section{Introduction} \label{sec:intro}
+
+...
+
+
+
+\section{Conclusion} \label{sec:conclusion}
+
+Summary: 
+
+\begin{itemize}
+    \item \textbf{inroduction}
+    \item Build medium-sized logical program for Retraction Control System (RCS)
+    \item To execute a manouver, you have to finde a plan, even if there is malfunction. A system should find an alternative sequence of instructions, if the one that you wanted to do is not possible, because of malfunctions.
+    \item \textbf{system`s design}
+    \item Java interface for easier data input
+    \item System can do (1)  (2) give me a list of max k instructions to reach a goal.
+    \item System produces program? Program is passed to solver. Solver outputs stable model. checker checks, if this is a possible model of the program. 
+    \item \textbf{Pumbing Module}
+    \item simulate space shuttle by directed graph. Nodes are tanks and pipe junctions, arcs are labled by valves.
+    \item input of system describing plumbing is directed graph describing system in its current state and list of faulty elements. 
+    \item
+    \item \textbf{conclusion}
+    \item ...
+\end{itemize}
+
+
+Questions: 
+
+\begin{itemize}
+    \item A-Prolog vs. Prolog vs. ASP?
+    \item lp-function is a program that is able to produce an output for every possible inpt in its domain, correct?
+\end{itemize}
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
