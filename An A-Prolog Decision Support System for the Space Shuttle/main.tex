@@ -27,37 +27,111 @@ This is a summary of the paper \textit{\papertitle}\cite{nogueira2001prolog}. In
 
 \section{Introduction} \label{sec:intro}
 
-...
+The system implemented by \authorquote{} is capable of computing answer sets, by making use of a Answer Set Programming\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we recommend \cite{erdem2016applications}.}. The system is part of the Retraction Control System of a space shuttle, which serves as a ``proof'' that ASP is capable of powering systems in a production environment. The task of the system implemented by \authorquote{} is to find a sequence of instructions to satisfy a set goal. The following article will describe the implementation of the system one module at a time and give an example why it was implemented with ASP and not with Prolog, which is a different logical programming language. 
+
+\begin{comment}
+\begin{itemize}
+    % we only introduce some modules!
+    \item medium sized knowledge-intensive system for computing answer sets 
+    \item System can do (1) check if a sequence of actions sattisifies a goal (2) give me a list of max k instructions to reach a goal.
+    \item Build medium-sized logical program for Retraction Control System (RCS)
+    \item To execute a maneuver, you have to find a plan, even if there is malfunction. A system should find an alternative sequence of instructions, if the one that you wanted to do is not possible, because of malfunctions.
+    \item system is consists of four different modules: plumbing module, valve control module and planning module. 
+    \item VCM can be separated into multiple parts: Basic and extended. 
+    \item This article will give a brief overview of the different components and highlight the importance of ASP as their implementation language. 
+\end{itemize}
+\end{comment}
 
 
 
-\section{Conclusion} \label{sec:conclusion}
 
-Summary: 
+\section{System Design} \label{sec:system_design}
+
+% what, how, why?
+The system designed and implemented by \authorquote{} calculates answer sets of problem instances in a knowledge-intensive domain. In this case the domain is the execution of space shuttle maneuvers. For this purpose the systems consists out of multiple components, which will be briefly explained in this article. The System itself is implemented in Answer Set Programming (ASP) and serves as a ``proof'' that ASP is capable of computing the answer sets to knowledge-intensive problems in a production environment. The system is part of the Retraction Control System (RCS) of the shuttle, which is responsible for maneuvering the craft while in space. 
+
+The first component of the system is the \textbf{Plumbing Module}. Its purpose is to simulate how fuel and oxygen gets delivered to the jets of the shuttle. In the module the shuttle is represented as a directed graph \verb|G = (N, E)|, where each node is a tank, which may or may not be pressurized. The edges in \verb|G| are pipes connecting the tanks. The pipe is controlled by a valve. Because \verb|G| might contain cycles, it is important that the language which is representing \verb|G| is able to express recursion. ASP has these capabilities, while Prolog does not have them. The following code is an example of a recursive definition used in the plumbing module\footnote{The definition displayed here is simplified. The full definition can be found in \cite{nogueira2001prolog}.}. 
+
+\begin{verbatim}
+    h(pressurized_by(N1,Tk),T)  :-  link(N2,N1,V),
+                                    h(in_state(V,open),T),
+                                    h(pressurized_by(N2,Tk),T).
+\end{verbatim}
+    
+The code determines under what circumstances a tank/node in \verb|G| is pressurized: A node \verb|N1| is pressurized by a tank \verb|Tk| at time \verb|T|, if there is a link between \verb|N1| and another node \verb|N2| controlled by a valve \verb|V| (first line). It further has to hold that \verb|V| is open at \verb|T| (second line) and that \verb|N2| is pressurized by \verb|Tk| at \verb|T| (third line). With this recursive definition we are able to express chains of nodes that are all pressurized by a single tank. 
+
+The second component of the system is the \textbf{Valve Control Module (VCM)}. The module is responsible for controlling the valves, which determines the flow of fuel and oxygen within the shuttle. The module is divided in two submodules: The basic VCM and the extended VCM. In the first it is assumed that the circuits controlling the position of the valves are functioning as expected, in the second this assumption is not done. Therefore the basic VCM models the valves and their positions explicitly, while the extended VCM views the state of the valves as a function of the circuits controlling the valves. The extended VCM module operates with the help of the \textbf{Circuit Theory Module (CTM)}, which is modeling the circuits, controlling the valves. Similarly to the VCM, the CTM models the shuttle as a directed graph. In the case of the CTM the nodes of this graph represent gates and the edges represent wires. 
+
+The third component of the system is the \textbf{Planning Module}, which is tasked with finding a plan to achieve a goal (e.g. the execution of a maneuver). To increase the modules efficiency, a goal is divided into subgoals that are determined in subsystems. For example could the goal ``execute maneuver x!'' be divided into a sequence of subgoals like ``fire jet y!''. For a further efficiency increase, the module also makes use of heuristics, which decreases the search space for the solver. 
+
+
+
+\begin{comment}
+
+\begin{itemize}
+    \item CTM = Circuit Theory Module. 
+    \item test and detect circuits. 
+    \item used to model circuits of RCS
+    \item electric circuit replresented by directed graph $E$. with gates = nodes, and wires = arcs. Gate can have delay $D$. 3 values: 0,1, unknown (u). 
+    \item A gate $G$ is sad to malfunction, if min one input pin is stuck on a signal value. This effect propagates forward in $G$.
+    \item if $G$ is stuck, its output is always $X$, the value at which $G$ is stuck, no matter what the input is.
+    
+    
+    \item \textbf{planning module:} $M$. Finds a plan to achieve a goal. Goal is reached by dividing system into subsystems and saying that each subsystem should achieve its goal. E.g. you have a maneuver and you would split this maneuver into subgoals, like triggering jets. This splitting into subsystems is done to reduce the search space for a solution. It greatly increases the efficiency. 
+    \item planning module also implements ``common sense'' stuff, like do not exectute two steps at the same time or to not pressurized tank that is already pressurized. 
+    \item you also prune the search space further by introducing heuristics. E.g. ``a normally functioning valve connecting nodes $N1$ and $N2$ should not be open if $N1$ is not pressurized".
+    \item A-Prolog allows to deal with recursive causal laws. 
+    \item \textbf{conclusion}
+    \item 
+\end{itemize}
+
+
+Done: 
 
 \begin{itemize}
     \item \textbf{inroduction}
-    \item Build medium-sized logical program for Retraction Control System (RCS)
-    \item To execute a manouver, you have to finde a plan, even if there is malfunction. A system should find an alternative sequence of instructions, if the one that you wanted to do is not possible, because of malfunctions.
     \item \textbf{system`s design}
     \item Java interface for easier data input
-    \item System can do (1)  (2) give me a list of max k instructions to reach a goal.
     \item System produces program? Program is passed to solver. Solver outputs stable model. checker checks, if this is a possible model of the program. 
-    \item \textbf{Pumbing Module}
+    \item \textbf{Plumbing Module}
+    \item Part of RCS/System
+    \item Purpose: deliver fuel and oxygen to jets
     \item simulate space shuttle by directed graph. Nodes are tanks and pipe junctions, arcs are labled by valves.
     \item input of system describing plumbing is directed graph describing system in its current state and list of faulty elements. 
-    \item
-    \item \textbf{conclusion}
-    \item ...
+    \item since the graph might contain cycles, we can not use Prolog, because Prolog cannot handle recursion.
+    \item example of code in Plumbing module: definition of pressure on non-tank nodes: 
+   
+        
+    \item \textbf{Valve Control Module}
+    \item VCM = Valve Control Module
+    \item Switch $S$, in position $S_w$ puts valve in position $S$. Failures can be: switches or valve can be stuck, electrical circuit can malfunction. 
+    \item Divide VCM in 2 modules: Basic (circuits are always ok). Extended (circuits might be broken, program is non-deterministic)
+    \item Basic VCM can be described with language $\mathcal{B}$, taken from \cite{gelfond1998action}. $\mathcal{B}$ was simplified for this purpose. We can prove that program is correct. 
+    \item switch has 3 states. open, closed, gpc/nutral 
+    \item In the extended VCM, we look at the wires, not at the valves and state of valve is based on signal of input wire.
+    \item the new state of the valve is expressed as a function of the states of the wires, not only of the switches themselfs. 
 \end{itemize}
+
+
 
 
 Questions: 
 
 \begin{itemize}
-    \item A-Prolog vs. Prolog vs. ASP?
+    \item A-Prolog vs. Prolog vs. ASP vs. $\mathcal{B}$
     \item lp-function is a program that is able to produce an output for every possible inpt in its domain, correct?
+    \item \verb|neq(S,gcp)| means that \verb|S| is not in state \verb|gcp|? In general, what is \verb|neq|?
 \end{itemize}
+\end{comment}
+
+
+
+\section{Conclusion} \label{sec:conclusion}
+
+In theur article \papertitle{} \authorquote{} show that it is possible to use ASP in a medium-sized knowledge-intensive application in a production environment. They describe the components of their system in detail and elaborate how these module work cooperate. \authorquote{} further demonstrate how to decrease the time needed to find an answer set by pruning the search space and making use of heuristics. 
+
+increase efficiency 
+
 
 \bibliographystyle{unsrt}
 \bibliography{refs}
