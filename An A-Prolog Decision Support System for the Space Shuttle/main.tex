@@ -20,14 +20,14 @@
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-This is a summary of the paper \textit{\papertitle}\cite{nogueira2001prolog}. In it \authorquote{}   
+This is a summary of the paper \textit{\papertitle}\cite{nogueira2001prolog}. In it, \authorquote{} describe the design of their system which is used in the Retraction Control System of a space shuttle. The described system utilizes ASP to determine possible sequences of commands which are executing a maneuver. The presented system is able to do so, even if parts of the shuttle are malfunctioning. 
 
 
 \end{abstract}
 
 \section{Introduction} \label{sec:intro}
 
-The system implemented by \authorquote{} is capable of computing answer sets, by making use of a Answer Set Programming\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we recommend \cite{erdem2016applications}.}. The system is part of the Retraction Control System of a space shuttle, which serves as a ``proof'' that ASP is capable of powering systems in a production environment. The task of the system implemented by \authorquote{} is to find a sequence of instructions to satisfy a set goal. The following article will describe the implementation of the system one module at a time and give an example why it was implemented with ASP and not with Prolog, which is a different logical programming language. 
+The system implemented by \authorquote{} is capable of computing answer sets, by making use of Answer Set Programming\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we recommend \cite{erdem2016applications}.}. The system is part of the Retraction Control System of a space shuttle, which serves as a ``proof'' that ASP is capable of powering systems in a production environment. The task of the system implemented by \authorquote{} is to find a sequence of instructions that satisfy a goal. The following article will describe the implementation of the system one module at a time and give an example of why it was implemented with ASP and not with Prolog, which might be seen by some as a valid alternative.
 
 \begin{comment}
 \begin{itemize}
@@ -48,9 +48,9 @@ The system implemented by \authorquote{} is capable of computing answer sets, by
 \section{System Design} \label{sec:system_design}
 
 % what, how, why?
-The system designed and implemented by \authorquote{} calculates answer sets of problem instances in a knowledge-intensive domain. In this case the domain is the execution of space shuttle maneuvers. For this purpose the systems consists out of multiple components, which will be briefly explained in this article. The System itself is implemented in Answer Set Programming (ASP) and serves as a ``proof'' that ASP is capable of computing the answer sets to knowledge-intensive problems in a production environment. The system is part of the Retraction Control System (RCS) of the shuttle, which is responsible for maneuvering the craft while in space. 
+%The system designed and implemented by \authorquote{} calculates answer sets of problem instances in a knowledge-intensive domain. In this case the domain is the execution of space shuttle maneuvers. For this purpose the systems consists out of multiple components, which will be briefly explained in this article. The System itself is implemented in Answer Set Programming (ASP) and serves as a ``proof'' that ASP is capable of computing the answer sets to knowledge-intensive problems in a production environment. The system is part of the Retraction Control System (RCS) of the shuttle, which is responsible for maneuvering the craft while in space. 
 
-The first component of the system is the \textbf{Plumbing Module}. Its purpose is to simulate how fuel and oxygen gets delivered to the jets of the shuttle. In the module the shuttle is represented as a directed graph \verb|G = (N, E)|, where each node is a tank, which may or may not be pressurized. The edges in \verb|G| are pipes connecting the tanks. The pipe is controlled by a valve. Because \verb|G| might contain cycles, it is important that the language which is representing \verb|G| is able to express recursion. ASP has these capabilities, while Prolog does not have them. The following code is an example of a recursive definition used in the plumbing module\footnote{The definition displayed here is simplified. The full definition can be found in \cite{nogueira2001prolog}.}. 
+The first component of the system is the \textbf{Plumbing Module}. Its purpose is to simulate how fuel and oxygen are delivered to the jets of the shuttle. In the module, the shuttle is represented as a directed graph \verb|G = (N, E)|, where each node is a tank, which may or may not be pressurized. The edges in \verb|G| are pipes connecting the tanks. The pipe is controlled by a valve. Because \verb|G| might contain cycles, it is important that the language which is representing \verb|G| is able to express recursion. ASP has these capabilities, while Prolog does not have them. The following code is an example of a recursive definition used in the plumbing module\footnote{The definition displayed here is simplified. The full definition can be found in \cite{nogueira2001prolog}.}. 
 
 \begin{verbatim}
     h(pressurized_by(N1,Tk),T)  :-  link(N2,N1,V),
@@ -58,11 +58,11 @@ The first component of the system is the \textbf{Plumbing Module}. Its purpose i
                                     h(pressurized_by(N2,Tk),T).
 \end{verbatim}
     
-The code determines under what circumstances a tank/node in \verb|G| is pressurized: A node \verb|N1| is pressurized by a tank \verb|Tk| at time \verb|T|, if there is a link between \verb|N1| and another node \verb|N2| controlled by a valve \verb|V| (first line). It further has to hold that \verb|V| is open at \verb|T| (second line) and that \verb|N2| is pressurized by \verb|Tk| at \verb|T| (third line). With this recursive definition we are able to express chains of nodes that are all pressurized by a single tank. 
+The code determines under what circumstances a tank/node in \verb|G| is pressurized: A node \verb|N1| is pressurized by a tank \verb|Tk| at time \verb|T| if there is a link between \verb|N1| and another node \verb|N2| controlled by a valve \verb|V| (first line). It further has to hold that \verb|V| is open at \verb|T| (second line) and that \verb|N2| is pressurized by \verb|Tk| at \verb|T| (third line). With this recursive definition, we are able to express chains of nodes that are all pressurized by a single tank. 
 
-The second component of the system is the \textbf{Valve Control Module (VCM)}. The module is responsible for controlling the valves, which determines the flow of fuel and oxygen within the shuttle. The module is divided in two submodules: The basic VCM and the extended VCM. In the first it is assumed that the circuits controlling the position of the valves are functioning as expected, in the second this assumption is not done. Therefore the basic VCM models the valves and their positions explicitly, while the extended VCM views the state of the valves as a function of the circuits controlling the valves. The extended VCM module operates with the help of the \textbf{Circuit Theory Module (CTM)}, which is modeling the circuits, controlling the valves. Similarly to the VCM, the CTM models the shuttle as a directed graph. In the case of the CTM the nodes of this graph represent gates and the edges represent wires. 
+The second component of the system is the \textbf{Valve Control Module (VCM)}. The module is responsible for controlling the valves, which determines the flow of fuel and oxygen within the shuttle. The module is divided into two submodules: The basic VCM and the extended VCM. In the first, it is assumed that the circuits controlling the position of the valves are functioning as expected, in the second this assumption is not done. Therefore the basic VCM models the valves and their positions explicitly, while the extended VCM views the state of the valves as a function of the circuits controlling the valves. The extended VCM module operates with the help of the \textbf{Circuit Theory Module (CTM)}, which is modeling the circuits, controlling the valves. Similarly to the VCM, the CTM models the shuttle as a directed graph. In the case of the CTM, the nodes of this graph represent gates and the edges represent wires. 
 
-The third component of the system is the \textbf{Planning Module}, which is tasked with finding a plan to achieve a goal (e.g. the execution of a maneuver). To increase the modules efficiency, a goal is divided into subgoals that are determined in subsystems. For example could the goal ``execute maneuver x!'' be divided into a sequence of subgoals like ``fire jet y!''. For a further efficiency increase, the module also makes use of heuristics, which decreases the search space for the solver. 
+The third component of the system is the \textbf{Planning Module}, which is tasked with finding a plan to achieve a goal (e.g. the execution of a maneuver). To increase the efficiency of the module, a goal is divided into subgoals that are determined in subsystems. For example, could the goal ``execute maneuver x!'' be divided into a sequence of subgoals like ``fire jet y!''. For a further efficiency increase, the module also makes use of heuristics, which decreases the search space for the solver. 
 
 
 
@@ -128,9 +128,8 @@ Questions:
 
 \section{Conclusion} \label{sec:conclusion}
 
-In theur article \papertitle{} \authorquote{} show that it is possible to use ASP in a medium-sized knowledge-intensive application in a production environment. They describe the components of their system in detail and elaborate how these module work cooperate. \authorquote{} further demonstrate how to decrease the time needed to find an answer set by pruning the search space and making use of heuristics. 
+In their article \textit{\papertitle{}} \authorquote{} show that it is possible to use ASP in a medium-sized knowledge-intensive application in a production environment. They describe the components of their system in detail and elaborate on how these module work cooperate. \authorquote{} further demonstrate how to decrease the time needed to find an answer set by pruning the search space and making use of heuristics. 
 
-increase efficiency 
 
 
 \bibliographystyle{unsrt}
