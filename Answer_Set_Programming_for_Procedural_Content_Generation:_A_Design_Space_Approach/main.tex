@@ -1,0 +1,163 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+\newcommand{\papertitle}{Answer Set Programming for Procedural Content Generation: A Design Space Approach}
+\newcommand{\authorquote}{Smith \etal}
+
+\begin{document}
+
+\title{A Summary of \papertitle}
+
+\author{Jan Mensch}
+
+\authorrunning{J. Mensch}
+
+\institute{University of Potsdam\\ 
+\email{jan.mensch@uni-potsdam.de}\\}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle} \cite{smith2011answer}. In it, \authorquote{} describes the development ...
+
+\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we refer the reader to \cite{erdem2016applications}.}.
+
+About \textit{\papertitle}:
+Provides both technicual, tutorial solution and survey contribution
+technical: map PCG problems to ASP
+tutorial: introduction to ASP and code-level walkthrough of existing PCG systems.  
+survey: review of existing ASP applications with generative purpose
+\end{abstract}
+
+
+% \section{Concept} \label{sec:concept}
+\section{Notes} 
+
+% what, how, why?
+
+\begin{list}
+    \item \textbf{What?} Procedural content generation for games is latent, produces artifacts from implicit design space (aka. generative space). 
+    \item \textbf{how?} We want to do it differently. Explicitly. Define Search space with ASP 
+    \item definition of design space of a generator: set of artifacts the generator will eventually produce given some (optional) input.
+    \item \textbf{why?} Use ASP, because we can not define design space and use this to define generators.
+    \item \textbf{What} Procedural content generation (PCG) game-desing technique which creates artifacts (instances of content) automaticly, instead of by hand. 
+    \item PCG multiple applications in games (e.g. Minecraft)
+    \item generators are nondeterministic.
+    \item When creating a generator \textbf{be aware} that it might produce undesirable artifacts (unsolvable puzzles, something that breaks game engine). Problem here is that you might not even know what a good output looks like.
+    \item \textbf{why asp?} To support direct, iterative refinement of design space. Also ASP already brings generic solvers, that can provide solutions, so you do not have to implement specific solutions on your own
+    \item \textbf{Motivation}
+    \item PCG solves two problems: production of game content (artifacts), production of generative procedures (like producing desirable content). 
+    \item production of game content: Judged by fun of play. Found by machine. 
+    \item production of procedure: Judged by runtime performance, expressivness and how easy to change. Found by human designers. 
+    \item \textbf{What?} problem with finding good PCG generators? You have to both find a good procedure, but you have to make sure that it generates good content. 
+    \item \textbf{How?} Solution 1: Focus on producing good artifacts. Will change around a lot in procedure to get good artifacts. But making basic changes in procedure (e.g. change level of abstraction) is difficult. 
+    \item \textbf{why?} Solution 1 is a lot of effort, because you are re-doing stuff a lot. With a declarative approach (ASP) you only have to focus on the design space. Procedure is already done for you.
+    \item Two Procedural content generators use APS can be found in \cite{smith2010ludocore} and \cite{smith2010variations}.
+    \item \textbf{why} You could also use described strategies to generate other stuff not just game content
+    \item \textbf{prolog and asp}
+    \item AnsProlog is the language accepted by most solvers \cite{baral2003knowledge}
+    \item AnsProlog derived from Prolog. Data and code are both represented as logical terms. 
+    \item \textbf{why?} ASP not Prolog? ASP has optional rules (called \textit{choice-rules}) or default values. Like: It is wet if it rains or if there is a thunderstorm, otherwise assume that it is dry. Also ASP you can express integrity constraints with AnsProlog. These are rules which exclude a solution from an answer set. The good thing? This solution will not be calculated (efficiency, because design space is trimmed).
+    \item AnsProlog program is then fed into an ASP solver. This solver works similar to SAP solvers \cite{lin2004assat}. For an example on pseudocode example of algorithmns used in ASP solvers, we would like to refer the reader to \cite[p.~221]{russel}.
+    \item \textbf{methods for using asp for pcg}
+    \item \textbf{How?}: Iterative process. Draw design space, implement this as a logic program, create artifacts and then change the design space based on the artifacts that you received.
+\end{list}
+
+
+
+\begin{verbatim}
+hostile(A,B) :- enemy(A,B).
+hostile(A,C):- enemy(A,B), friend(B,C).
+hostile(A,C):- friend(A,B), enemy(B,C).
+\end{verbatim}
+
+meaning: ``I am hostile to someone if they are my enemy, if they are the friend of one of my enemies, or if they are the enemy of one of my friends.''
+
+\section{Introduction} \label{sec:introduction}
+
+\section{???}
+
+
+\section{Conclusion} \label{sec:conclusion}
+
+The system implemented by \authorquote{} shows that it is possible to ...
+
+The development of the application touches on many questions of ... like ...
+
+It is the hope of \authorquote{} that ...
+
+
+\begin{comment}
+\section{Notes}
+
+\begin{itemize}
+    \item \textbf{Abstract}
+    \item Proofdoku = Sudoku + Player has to explain reasoning
+    \item why? to better understand design and deployment of game systems depending on ASP
+    \item \textbf{intro}
+    \item ASP should do following: (1) check validity of players argument (2) compute hints 
+    \item why? What difficulties arise when we implement this using ASP?
+    \item \textbf{AI-based game design}
+    \item ai systems playing game can explore unreachable game desing spaces
+    \item \textbf{asp}
+    \item ASP logical programming paradigm for solving NP-hard search and optimization problems
+    \item ASP solvers rely on algorithmn from Boolean satisfiability t. or satisfiability module theorie
+    \item they are using Clingo-5 (solver). They want to use features of clingo-5 that are only available in it, like disjunctive ASP\cite{gebser2013advanced} to express problems outside NP, when searching over arguments the player might make. 
+    \item \textbf{asp in game design applications}
+    \item aps in game desing is not common
+    \item \textbf{game design}
+    \item explains sudoku...
+    \item \textbf{proofdoku}
+    \item multiple phases: Start -> strategy -> tactica -> strategy -> victory 
+    \item strategy: Which blank cell should player fill next? 
+    \item tactic? changes the evidence set 
+    \item victory: If no more cells are left open
+    \item \textbf{evergreen...}
+    \item For the player the game should always feel fresh. This is why proofdoku imports game instances from various sources and you can also import a gam instance. 
+    \item arguments for game move: evidence set, conclusion cell (selected blank cell). Optimal args are the ones with the least possible amount of evidence by cell count. 
+    \item \textbf{feedback mechanisms}
+    \item After tactic phase, game shows how the range of legal possibilities for every other cell was impacted. This will help player spot long range implications and player can detect that adding a new number has no impact on a cell of interest 
+    \item \textbf{hints}
+    \item system can hint to the player which cell to select next
+    \item hinting in tactics phase? 
+    \item \textbf{in process}
+    \item using clingo.js to run solver locally in browser at user, so you avoid central infrastructure
+    \item drawback: No multithreading (freeze UI) and browser could kill process
+    \item Will try to utilize webworkers to emulate simultanious behaviour
+    \item Alternative would be to run Clingo in the cloud. Disatvantag: Not that scalable as just sending solver to users and letting it solve themselves. 
+    \item They also implement caching. This works, because game uses a small set of new game instances every day. Many players will play the same, so you can cache answers and responses. 
+    \item multiple levels of caching: (1) localy in the browser for moves user already did (2) global caching: across all inputs of all users. 
+    \item \textbf{conclusion}
+    \item ...
+\end{itemize}
+
+\section{Questions} \label{sec:system_design}
+
+% what, how, why?
+
+\begin{itemize}
+    \item I do not understand the tactics phase? Why does the player has to select new cells? Should the player not submit an input number?
+    \item does cashing make sense? Makes sense, because sudoku always has one solution, so it should be determinestic. 
+\end{itemize}
+
+
+\textbf{Notest from lecture:}
+\begin{itemize}
+    \item evidence set: A number of cells that the player uses to explain why he submitted a number. 
+    \item evidence set: Numbers that proove that a blank field is a certain number. 
+    \item optimal evidence set, if it has as least as possible premises (cells to consider). Optimal is 4 cells. 
+    \item disjuntion noch mal anschauen
+\end{itemize}
+
+Check out \url{https://proofdoku.com/}
+
+\end{comment}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
