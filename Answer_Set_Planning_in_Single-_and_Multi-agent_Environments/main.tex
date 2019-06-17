@@ -1,0 +1,92 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+\usepackage{alltt}
+
+\newcommand{\papertitle}{Answer Set Programming for Procedural Content Generation}
+\newcommand{\authorquote}{Smith \etal}
+
+\begin{document}
+
+\title{A Summary of \papertitle}
+
+\author{Jan Mensch}
+
+\authorrunning{J. Mensch}
+
+\institute{University of Potsdam\\ 
+\email{jan.mensch@uni-potsdam.de}\\}
+
+
+%
+\maketitle              % typeset the header of the contribution
+% About \textit{\papertitle}:
+% Provides both technical, tutorial solution and survey contribution
+% technical: map PCG problems to ASP
+%tutorial: introduction to ASP and code-level walkthrough of existing PCG systems.  
+% survey: review of existing ASP applications with generative purpose
+
+
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle} 
+
+In it, \authorquote{} describe how
+
+ASP\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we refer the reader to \cite{erdem2016applications}.}. 
+
+The authors also provide/review
+
+Since a full summary of the paper by \authorquote{} would go beyond the scope of this article, this text is focused on a summary of
+
+We will do so by giving an introduction to Procedural Content Generation (Section \ref{sec:introduction}) and an overview of the PCG process and why it makes sense to implement generators with ASP (Section \ref{sec:ta}). 
+
+\end{abstract}
+
+
+\section{Introduction to ...} \label{sec:introduction}
+
+    % what, how, why?
+
+
+\section{notes}
+
+\begin{itemize}
+    \item authors use action language $\mathfrak{B}$, described in [7]
+    \item Answer set planning is one of the earliest and most discussed applications of ASP [13, 15]
+    \item Definition of language looks as follows: 
+    \begin{itemize}
+        \item $\mathfrak{P}$ over ($\mathfrak{F}$, $\mathfrak{A}$) = domain is defined over fluents and actions
+        \item a literal \verb|l| is a fluent ($f \in \{\mathfrak{F},\bot\}$) or its negation $\neg f$
+        \item $\psi$ is a set of literals
+        \item and a state \verb|a| can be executed
+        \item how all of this works is described in detail in [7]. If the reader is interested...
+    \end{itemize}
+    \item \textbf{Kiva robots example}
+    \item robots in warehouse transport storage pods
+    \item the robots have two relevant properties: the location \verb|l| and weather or not they are carrying a storage pod \verb|p|
+    \item The robots can funrthermore execute 3 actions: \verb|move(l)| (move robot to position \verb|l|), \verb|pick_up(p,l)| (pick up the storage pod \verb|p| at location \verb|l|) and \verb|drop_off| (drop of the storage pod at the current location).
+    \begin{alltt}
+        \(\neg\)holds(carrying(P), I + 1) \(\leftarrow\) occurs(drop_off, I).
+        holds(pot_at(P, L), I + 1) \(\leftarrow\) occurs(drop_off, I), 
+            holds(at(L), I), holds(carrying(P), I). 
+        \(\leftarrow\) occurs(drop_off, I), \(\neg\)holds(carrying(P), I). 
+    \end{alltt}
+    example for drop of logic: First statement says that if a drop\_off happens, it will result in the robot no longer carrying the pod \verb|P|. 
+    Second statement says that if a drop of occurs, the pod \verb|P| will be at the location \verb|L| at the step/time \verb|I + 1|, if the current step/time is \verb|I|. 
+    Third statement prohibits that a pod is dropped of, that was not carried by the robot. 
+\end{itemize}
+
+\section{Technical Aspects} \label{sec:ta}
+% what, how, why?
+
+
+
+\section{Conclusion} \label{sec:conclusion}
+
+...
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
