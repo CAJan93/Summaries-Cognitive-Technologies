@@ -2,6 +2,7 @@
 \usepackage{aspPackage}
 
 \usepackage{alltt}
+\usepackage{cite}
 
 \newcommand{\papertitle}{Answer Set Programming for Procedural Content Generation}
 \newcommand{\authorquote}{Smith \etal}
@@ -38,6 +39,8 @@ The authors also provide/review
 
 Since a full summary of the paper by \authorquote{} would go beyond the scope of this article, this text is focused on a summary of
 
+due to space limitations, we do not mention everything...
+
 We will do so by giving an introduction to Procedural Content Generation (Section \ref{sec:introduction}) and an overview of the PCG process and why it makes sense to implement generators with ASP (Section \ref{sec:ta}). 
 
 \end{abstract}
@@ -48,18 +51,21 @@ We will do so by giving an introduction to Procedural Content Generation (Sectio
     % what, how, why?
 
 
-\section{notes}
+\section{Notes}
+
+\section{Single- and Multi-agent Environments}
+
 
 \begin{itemize}
-    \item authors use action language $\mathfrak{B}$, described in [7]
-    \item Answer set planning is one of the earliest and most discussed applications of ASP [13, 15]
+    \item authors use action language $B$, described in \cite{gelfond1998action}
+    \item Answer set planning is one of the earliest and most discussed applications of ASP \cite{marek1999stable, niemela1999logic}
     \item Definition of language looks as follows: 
     \begin{itemize}
-        \item $\mathfrak{P}$ over ($\mathfrak{F}$, $\mathfrak{A}$) = domain is defined over fluents and actions
-        \item a literal \verb|l| is a fluent ($f \in \{\mathfrak{F},\bot\}$) or its negation $\neg f$
+        \item $P$ over ($F$, $A$) = domain is defined over fluents and actions
+        \item a literal \verb|l| is a fluent ($f \in \{F,\bot\}$) or its negation $\neg f$
         \item $\psi$ is a set of literals
         \item and a state \verb|a| can be executed
-        \item how all of this works is described in detail in [7]. If the reader is interested...
+        \item how all of this works is described in detail in \cite{gelfond1998action}. If the reader is interested...
     \end{itemize}
     \item \textbf{Kiva robots example}
     \item robots in warehouse transport storage pods
@@ -74,6 +80,50 @@ We will do so by giving an introduction to Procedural Content Generation (Sectio
     example for drop of logic: First statement says that if a drop\_off happens, it will result in the robot no longer carrying the pod \verb|P|. 
     Second statement says that if a drop of occurs, the pod \verb|P| will be at the location \verb|L| at the step/time \verb|I + 1|, if the current step/time is \verb|I|. 
     Third statement prohibits that a pod is dropped of, that was not carried by the robot. 
+    \item \textbf{3 planning and reasoning (description of Kivia domain)}
+    \item Short introduction into ASP terms. \verb|holds(f, i)| states that a fluent at step \verb|i| holds and \verb|occurs(a, i)| denotes that action \verb|a| is executed at step \verb|i|. Both terms can be negated. 
+    \item domain also states that a robot can only move between positions that are ``connected'' to each other
+    \item and that all states (fluents) stay the same, unless changed aka. principle of inertia
+    \item that a robot \verb|holds| a pod at step  \verb|I + 1|, if it picked it up at step \verb|I|
+    \item that a robot can only carry one pod at a time
+    \item and that a robot can only be at one location at any point in time
+    \item a pod that is carried by a robot will always be at the same position as the robot
+    \item For the action \verb|pick_up(p, l)| at step  \verb|I|, there has to be a pod present at the location \verb|l| at \verb|I|.
+    \item For the action \verb|occurs(drop_off, I)| at step \verb|I|, a robot has to hold a pod \verb|P| at step \verb|I|. After the occurrence of the action, \verb|P| will be at position \verb|l|, where \verb|l| was the position of the robot at \verb|I| and the robot will no longer carry \verb|P| at \verb|I + 1|.
+    \item \textbf{goal}
+    \item We further describe a set of goals $\Upsilon_g$, denoted as \verb|hold(f, n)| statements. \verb|n| is the maximum plan length and \verb|f| a fluent $\in F$. The goal conditions are accompanied by a set of \verb|not| $\Upsilon_g$, which denote that a condition is not satisfied, unless proven otherwise.
+    \item a possible goal condition could be that a pod is is at some location. 
+    \itme An instance of the domain also needs to clarify its starting condition, e.g. where each robot is at step 0. 
+    \item the task of ``planning''\footnote{commonly also known as ``solving''} is to find a solution for the problem instance, described by its goal conditions, initial conditions and its rules. A plan\footnote{Also known as a answer, an element of the answer set.}, if it is possible to generate, can be found by making actions (not) occur at step \verb|I|. If the solver does not generate a plan for a problem instance, it does not necessarily mean that no plan exists, but rather that no plan exists that has a maximum of \verb|n| steps. 
+    \item \textbf{diagnostic reasoning}
+    \item detect if a robot is stuck or charged
+    \item can be detected by discrepancy of an observed and an expected state, e.g. executes the action \verb|occurs(move(l), I)|, but did not reach \verb|l| at \verb|I + 1|.
+    \item \textbf{multi-agent environment}
+    \item \textbf{centralized MAP (multi-agent planning)}
+    \item studied a lot [6]
+    \item tries to use one ``master node'' for planning and coordinating actions
+    \item We can still model this with ASP in a similar way as described above. 
+    \item We will now have to add an extra attribute to terms, denoting which element is addressed, e.g. \verb|at(o, l)|, instead of \verb|at(l)|, with  \verb|o| denoting the object that is at location  \verb|l|. This is since we now  longer have the perspective of each object (where the affiliation of state and object is obvious), but a global view, where we have to denote which object is meant.
+    \item \textbf{we could give move example}, well maybe not. Not sure...
+    \item \textbf{distributed planning}
+    \item drawback centralized planning: cannot expoid organization structure (e.g. hierarchical) of agents. Dist planning can do that
+    \item dist planning -> fully cooperative and non-/partially-cooperative
+    \item \textbf{fully cooperative dist planning}
+    \item each agent plans for himself without knowledge of other agents plans
+    \item each agent sends resulting plan to a controller (``master node''). 
+    \item controller tries to coordinate the plans (avoid conflicts). It can do simple changes to plans if necessary. 
+    \item if conflict is unsolvabel, controller identifies plans that cause the conflict and requests changes
+    \item The resolution of a conflict can require multiple iterations (controller requires new plans again and again...)
+    \item if the set of plans generated by the agents can be merged or not can itself be determined by the controller using ASP
+    \item \textbf{non-/partially cooperative agents}
+    \item fully-cooperative only works if agents are willing to share all of their information and do not compete with each other (Kiva domain e.g.)
+    \itme The authors describe a distributed version of the centralized algorithmn, described in \cite{son2009logic}
+    \item approach assumes that agents are able to communicat with eachother in order to negotiate (e.g. about the position they request). 
+    \item Negotiation is important for agents to gain further knowledge, without revealing everything to a centralized unit or each other
+    \item \textbf{conclusion}
+    \item translation of dynamic domains into static programs. Translation of Single agent environments into multi-agent environments
+    \item apply these problems using ASP encoding to Kiva robot system
+    \item notes about implementation
 \end{itemize}
 
 \section{Technical Aspects} \label{sec:ta}
