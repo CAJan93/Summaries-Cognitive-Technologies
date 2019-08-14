@@ -1,0 +1,127 @@
+
+from abstract
+    originated from facebook
+    goal: desing system that can fact based question-answering, simple induction
+        co-reference resolution...
+        and measure performance of such system
+    system combine ASP\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we refer the reader to \cite{erdem2016applications}.} with NLP
+from intro: 
+    try to solve real-world problems
+    sate-of-the-art systems domain dependent. Difficult to measure performance
+    example task of knowledge-based question-answering
+
+\begin{verbatim}
+    Mary grabbed the football.
+    Mary traveled to the office.
+    Mary took the apple there.
+    What is Mary carrying? A:football,apple
+    Mary left the football.
+    Daniel went back to the bedroom.
+    What is Mary carrying? A:apple
+\end{verbatim}
+    
+    authors provide implementation of agent model
+    implementation has 3 layers: 
+    statistical inference layer
+    first layer: Abstract Meaning Representation (AMR) Parser (part of NLP layer)
+        a semantic representation language encoding the meaning of English sentences \cite{banarescu2013abstract}
+    second layer: Formal Reasoning Layer
+        Implemented with ASP
+        Used to reason about events
+        also contains formalism representing law of inertia (things stay the same, if not changed). 
+    third layer: Translation layer
+        translates natural language sentences to event calculus with help of AMR parser
+        
+        
+    Example above -> syntax of Event calculus and obtains AMR of sentence
+    
+    representation of example 1 in Event Calculus
+    
+    Layer 2 will formulate a hypothesis $\mathcal{H}$ and update it based on the data
+    
+    
+\begin{verbatim}
+    (g / grab
+        :ARG0 (p / person
+            :name (m / name :opt Mary ))
+        :ARG1 (f / football ))
+\end{verbatim}
+    
+
+\begin{verbatim}
+    Narrative (question)
+    happensAt(grab(mary,football),1).
+    happensAt(travel(mary,office),2).
+    happensAt(take(mary,apple),3).
+    happensAt(leave(mary,footbal;),5).
+    happensAt(go back(daniel,bedroom),6).
+    Annotation (answer)
+    holdsAt(carry(mary,football),4).
+    holdsAt(carry(mary,apple),4).
+    holdsAt(carry(mary,apple),7).
+    not holdsAt(carry(mary,football),7)
+\end{verbatim}
+        
+from Learning ASPrograms for QA: 
+    $ILP(\mathcal{B},\mathcal{E},\mathcal{M})$, where $\mathcal{B}$ is provided background knowledge, $\mathcal{E} = \{\mathcal{E}^+, \mathcal{E}^-\}$ are the positive and negative training examples. $\mathcal{M}$ is the mode, which restricts the possible models that can be learned. 
+
+
+    Approach uses XHAIL algorithm \cite{citation_needed}, which works in 3 steps: 
+    
+    Step 1: 
+        find ground atoms $\triangle$
+        atoms without variables
+        These are the initial and final states of the story described above
+        $\triangle$ is not unique.
+        Try to increase size of $\triangle$ set in order to find a possibly small solution
+        
+    \begin{align*}
+        \triangle = 
+        \left\{ 
+        \begin{matrix}{initiatedAt(carry(mary, football), 1)} \\ 
+        {initiatedAt(carry(mary, apple), 3)} \\ 
+        {terminatedAt(carry(mary, football), 5)} 
+        \end{matrix}\right\}
+    \end{align*}
+        
+    Step 2: 
+        find clauses $K$ for the calculated ground atoms
+        each ground atoms will be at the head of the newly created clauses
+        Finding fitting clauses is restricted by hypothesis space $\mathcal{M}$
+        If you now remove the literals from the clauses you obtain the rules of the ASP program (or at least a first draft) $K_v$ v for variable
+        
+        
+        
+        \begin{align*}
+        K_v = 
+        \left\{ 
+        \begin{matrix}{initiatedAt(carry(X, Y ), T)}
+{\leftarrow happensAt(grab(X, Y ), T).}\\
+{initiatedAt(carry(X, Y ), T)}
+{\leftarrow happensAt(take(X, Y ), T).}\\
+{terminatedAt(carry(X, Y ), T)}
+{\leftarrow happensAt(leave(X, Y ), T).}\\
+        \end{matrix}\right\}
+    \end{align*}
+        
+
+
+    Step 3:
+        Try to minimize the received program by removing as many literals from $K_v$ as possible. In the example provided $K_v$ is already minimal.     
+        
+
+Skip path finding part
+    Implementation can also be used to solve a path finding problem, where a set of sentences is given and the agent is asked to provide us with directions.
+    
+There is also Coreference resolution taks which we will also skip
+
+
+Evaluation: Provided method outperforms the state-of-the art in all 20 tasks, except in Basic Induction. 
+
+
+Conclusion: 
+    adding a formal reasoning layer increases reasoning capabilities of agent
+
+
+
+

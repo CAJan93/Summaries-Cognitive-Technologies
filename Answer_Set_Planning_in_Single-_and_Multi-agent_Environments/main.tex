@@ -3,9 +3,10 @@
 
 \usepackage{alltt}
 \usepackage{cite}
+\usepackage{enumitem}
 
-\newcommand{\papertitle}{Answer Set Programming for Procedural Content Generation}
-\newcommand{\authorquote}{Smith \etal}
+\newcommand{\papertitle}{Answer Set Planning in Single- and Multi-agent Environments}
+\newcommand{\authorquote}{Son \etal}
 
 \begin{document}
 
@@ -29,112 +30,143 @@
 
 
 \begin{abstract}
-This is a summary of the paper \textit{\papertitle} 
-
-In it, \authorquote{} describe how
-
-ASP\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we refer the reader to \cite{erdem2016applications}.}. 
-
-The authors also provide/review
-
-Since a full summary of the paper by \authorquote{} would go beyond the scope of this article, this text is focused on a summary of
-
-due to space limitations, we do not mention everything...
-
-We will do so by giving an introduction to Procedural Content Generation (Section \ref{sec:introduction}) and an overview of the PCG process and why it makes sense to implement generators with ASP (Section \ref{sec:ta}). 
+This is a summary of the paper \textit{\papertitle}. In it \authorquote{} describe approaches on how to solve planning and diagnostics problems in single- and and Multi-agent environments with ASP\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we refer the reader to \cite{erdem2016applications}.}. Since the single-agent environment is just a simplified version of the multi-agent environment, this article will focus on the multi-agent setting. The article will summarize the findings of \authorquote{} by first giving a  short introduction to planning problems in ASP (\sectionref{8:sec:introduction}) and explaining the problem domain (\sectionref{8:sec:kiva}). The article will then summarise the used approaches in the multi-agent environment (\sectionref{8:sec:environments}) and list conclusions (\sectionref{8:sec:conclusion}).
 
 \end{abstract}
 
 
-\section{Introduction to ...} \label{sec:introduction}
-
-    % what, how, why?
-
-
-\section{Notes}
-
-\section{Single- and Multi-agent Environments}
-
-
-\begin{itemize}
-    \item authors use action language $B$, described in \cite{gelfond1998action}
-    \item Answer set planning is one of the earliest and most discussed applications of ASP \cite{marek1999stable, niemela1999logic}
-    \item Definition of language looks as follows: 
-    \begin{itemize}
-        \item $P$ over ($F$, $A$) = domain is defined over fluents and actions
-        \item a literal \verb|l| is a fluent ($f \in \{F,\bot\}$) or its negation $\neg f$
-        \item $\psi$ is a set of literals
-        \item and a state \verb|a| can be executed
-        \item how all of this works is described in detail in \cite{gelfond1998action}. If the reader is interested...
-    \end{itemize}
-    \item \textbf{Kiva robots example}
-    \item robots in warehouse transport storage pods
-    \item the robots have two relevant properties: the location \verb|l| and weather or not they are carrying a storage pod \verb|p|
-    \item The robots can funrthermore execute 3 actions: \verb|move(l)| (move robot to position \verb|l|), \verb|pick_up(p,l)| (pick up the storage pod \verb|p| at location \verb|l|) and \verb|drop_off| (drop of the storage pod at the current location).
-    \begin{alltt}
-        \(\neg\)holds(carrying(P), I + 1) \(\leftarrow\) occurs(drop_off, I).
-        holds(pot_at(P, L), I + 1) \(\leftarrow\) occurs(drop_off, I), 
-            holds(at(L), I), holds(carrying(P), I). 
-        \(\leftarrow\) occurs(drop_off, I), \(\neg\)holds(carrying(P), I). 
-    \end{alltt}
-    example for drop of logic: First statement says that if a drop\_off happens, it will result in the robot no longer carrying the pod \verb|P|. 
-    Second statement says that if a drop of occurs, the pod \verb|P| will be at the location \verb|L| at the step/time \verb|I + 1|, if the current step/time is \verb|I|. 
-    Third statement prohibits that a pod is dropped of, that was not carried by the robot. 
-    \item \textbf{3 planning and reasoning (description of Kivia domain)}
-    \item Short introduction into ASP terms. \verb|holds(f, i)| states that a fluent at step \verb|i| holds and \verb|occurs(a, i)| denotes that action \verb|a| is executed at step \verb|i|. Both terms can be negated. 
-    \item domain also states that a robot can only move between positions that are ``connected'' to each other
-    \item and that all states (fluents) stay the same, unless changed aka. principle of inertia
-    \item that a robot \verb|holds| a pod at step  \verb|I + 1|, if it picked it up at step \verb|I|
-    \item that a robot can only carry one pod at a time
-    \item and that a robot can only be at one location at any point in time
-    \item a pod that is carried by a robot will always be at the same position as the robot
-    \item For the action \verb|pick_up(p, l)| at step  \verb|I|, there has to be a pod present at the location \verb|l| at \verb|I|.
-    \item For the action \verb|occurs(drop_off, I)| at step \verb|I|, a robot has to hold a pod \verb|P| at step \verb|I|. After the occurrence of the action, \verb|P| will be at position \verb|l|, where \verb|l| was the position of the robot at \verb|I| and the robot will no longer carry \verb|P| at \verb|I + 1|.
-    \item \textbf{goal}
-    \item We further describe a set of goals $\Upsilon_g$, denoted as \verb|hold(f, n)| statements. \verb|n| is the maximum plan length and \verb|f| a fluent $\in F$. The goal conditions are accompanied by a set of \verb|not| $\Upsilon_g$, which denote that a condition is not satisfied, unless proven otherwise.
-    \item a possible goal condition could be that a pod is is at some location. 
-    \itme An instance of the domain also needs to clarify its starting condition, e.g. where each robot is at step 0. 
-    \item the task of ``planning''\footnote{commonly also known as ``solving''} is to find a solution for the problem instance, described by its goal conditions, initial conditions and its rules. A plan\footnote{Also known as a answer, an element of the answer set.}, if it is possible to generate, can be found by making actions (not) occur at step \verb|I|. If the solver does not generate a plan for a problem instance, it does not necessarily mean that no plan exists, but rather that no plan exists that has a maximum of \verb|n| steps. 
-    \item \textbf{diagnostic reasoning}
-    \item detect if a robot is stuck or charged
-    \item can be detected by discrepancy of an observed and an expected state, e.g. executes the action \verb|occurs(move(l), I)|, but did not reach \verb|l| at \verb|I + 1|.
-    \item \textbf{multi-agent environment}
-    \item \textbf{centralized MAP (multi-agent planning)}
-    \item studied a lot [6]
-    \item tries to use one ``master node'' for planning and coordinating actions
-    \item We can still model this with ASP in a similar way as described above. 
-    \item We will now have to add an extra attribute to terms, denoting which element is addressed, e.g. \verb|at(o, l)|, instead of \verb|at(l)|, with  \verb|o| denoting the object that is at location  \verb|l|. This is since we now  longer have the perspective of each object (where the affiliation of state and object is obvious), but a global view, where we have to denote which object is meant.
-    \item \textbf{we could give move example}, well maybe not. Not sure...
-    \item \textbf{distributed planning}
-    \item drawback centralized planning: cannot expoid organization structure (e.g. hierarchical) of agents. Dist planning can do that
-    \item dist planning -> fully cooperative and non-/partially-cooperative
-    \item \textbf{fully cooperative dist planning}
-    \item each agent plans for himself without knowledge of other agents plans
-    \item each agent sends resulting plan to a controller (``master node''). 
-    \item controller tries to coordinate the plans (avoid conflicts). It can do simple changes to plans if necessary. 
-    \item if conflict is unsolvabel, controller identifies plans that cause the conflict and requests changes
-    \item The resolution of a conflict can require multiple iterations (controller requires new plans again and again...)
-    \item if the set of plans generated by the agents can be merged or not can itself be determined by the controller using ASP
-    \item \textbf{non-/partially cooperative agents}
-    \item fully-cooperative only works if agents are willing to share all of their information and do not compete with each other (Kiva domain e.g.)
-    \itme The authors describe a distributed version of the centralized algorithmn, described in \cite{son2009logic}
-    \item approach assumes that agents are able to communicat with eachother in order to negotiate (e.g. about the position they request). 
-    \item Negotiation is important for agents to gain further knowledge, without revealing everything to a centralized unit or each other
-    \item \textbf{conclusion}
-    \item translation of dynamic domains into static programs. Translation of Single agent environments into multi-agent environments
-    \item apply these problems using ASP encoding to Kiva robot system
-    \item notes about implementation
-\end{itemize}
-
-\section{Technical Aspects} \label{sec:ta}
 % what, how, why?
 
+% we scip single agent, because that is too simple
+% definition
+
+\section{Introduction} \label{8:sec:introduction}
+
+Answer set planning is one of the earliest and most discussed applications of ASP \cite{marek1999stable, niemela1999logic}. For the scope of this article planning problems are defined as combinatorial problems where a combination or order of actions has to be found that satisfy predefined rules. \authorquote{} use the example of the Kiva domain (see \sectionref{8:sec:kiva}). 
+
+To illustrate their approach, \authorquote{} utilize the action language $B$, described in \cite{gelfond1998action}. A program written in $B$ is defined over a group of fluents $F$ and actions $A$, where a set of fluents is a state. A literal in this language is defined as $l \in \{f, \neg f : f \in  \{F, \bot\} \}$.
+
+%The authors use a discrete model in time, where the counter \verb|I| refers to a point in time called a ``step''.
+
+% $l \in F \cup \bot \cup \neg F$.
 
 
-\section{Conclusion} \label{sec:conclusion}
+%\{f, \neg f | f \in F \cup \bot\}$.
 
-...
 
+\section{The Kiva robots domain} \label{8:sec:kiva}
+
+
+The Kiva warehouse-management system describes a repository in which robots carry pods or shelves to the workers, which then pick the required items from the shelves. This settings significantly improves worker productivity \cite{wurman2008coordinating}.
+
+In \textit{\papertitle{}} \authorquote{} abstract from the shelves and only write about storage pods. A robot is described by two attributes: the location \verb|l| and wehether or not it is  carrying a storage pod \verb|p|. The snipped \verb|holds(at(l), I), holds(carrying(p), I).| could be an extract from the body of a rule, stating that a robot\footnote{``A robot'' implicitly refers to the robot that executes the action. In centralized environment the identity of the robot has to be stated explicitly (see \sectionref{8:subsec:centralized}).} is carrying \verb|p| is at location \verb|l| at step \verb|I|.
+
+The authors identify the following rules in the domain:
+
+\begin{enumerate}%[leftmargin=.5in]
+        \item  A robot can execute the action \verb|move(l)| (move the robot to position \verb|l|) and \linebreak \verb|pick_up(p,l)| (pick up the storage pod \verb|p| at location \verb|l|).
+        \item  A robot can only move between positions that are \verb|connected| to each other
+        \item A robot carries a pod at step \verb|I + 1|, if it picked it up at step \verb|I|.
+        \item A robot can only carry one pod at a time. 
+        \item A robot can only be at one location at a time.
+        \item A pod that is carried by a robot will always be in the same position as the robot.
+        \item All fluent $f \in F$ stay the same unless changed (also known as the ``principle of inertia'').
+        \item For the event \verb|pick_up(p, l)| at step  \verb|I|, there has to be a pod present at the location \verb|l| at step \verb|I|.
+        \item For the event \verb|drop_off| at step \verb|I|, a robot has to hold a pod \verb|p| at step \verb|I|. After the occurrence of the event, the pod will remain at the dropped off position, unless picked up again. After the event, the robot will no longer carry the pod \verb|p|.
+\end{enumerate}
+
+\subsection{Planning} \label{subsec:planning}
+
+The domain can be used for to illustrate the problem of single- and multi-agent planning. The problem is to find a plan for each robot such that none of the plans conflict.  
+
+A problem instance of this domain requires the definition of a set of goals  $\Upsilon_g$. $\Upsilon_g$ is defined as a group of \verb|hold(f, n)| statements, where \verb|n| is the maximum plan length and \verb|f| $\in F$ a state. The goal conditions are accompanied by \verb|not| $\Upsilon_g$, which denote that a condition is not satisfied, unless proven otherwise. The problem instance further needs starting conditions at step \verb|I = 0|. These starting conditions include the positions of the robots. 
+
+The problem instance is then passed to a solver, which aims to generate an answer set for the given input. This answer set is the set of possible plans that meet the defined goals in a maximum of \verb|n| steps, under the specified rules and starting conditions.
+
+\subsection{Diagnostics} \label{subsec:diagnostics}
+
+ASP applications of this domain can also include diagnostic application. Diagnostic reasoning determines if an observed state is equal to an expected state. Observation and expectation might differ if, e.g., the robot got stuck. A diagnostic application could detect this by observing \verb|occurs(move(l), I)| and detecting that the position of the robot is unequal to \verb|l| at \verb|I + 1|.
+
+
+
+  
+\section{Multi-agent Environments} \label{8:sec:environments}
+
+According to \authorquote{} there are two possible ways to solve the planning problem described in \sectionref{subsec:planning}: A centralized and a decentralized approach. The following sections will describe each of them briefly. 
+
+
+\subsection{Decentralized approach} \label{8:subsec:decentralized}
+
+
+    % what, why, how?
+    In this approach, each robot will try to generate its own plan. Decentralized planning is able to utilize a possible organizational structure of the agents (e.g. a hierarchical one). Decentralized planning as described by \authorquote{} works as follows: Each agent creates a plan for itself, without knowledge of the other agent`s plans. The agent then sends the created plan to a ``master node'', called controller. The controller will try to merge the plans. If there are plans that are conflicting, the controller will try to resolve conflicts between the received plans. If he is not able to resolve the conflicts, he will identify the plans that have to change and request their regeneration by the corresponding agents. This process is recursive and may thus be executed multiple times. Code used in this approach might look like the following snippet (the explanation for each statement is included as a comment): 
+    
+    \vspace{0.6cm}
+    
+    
+    \begin{alltt}
+   \% the robot will no longer carry pod p after drop_off event
+   \(\neg\)holds(carrying(P), I + 1) \(\leftarrow\) occurs(drop_off, I).
+   \% pod p is remains at the location after the drop_off
+   holds(pot_at(P, L), I + 1) \(\leftarrow\) occurs(drop_off, I), 
+       holds(at(L), I), holds(carrying(P), I). 
+   \% the robot cannot drop_off pods that it does not carry
+   \(\leftarrow\) occurs(drop_off, I), \(\neg\)holds(carrying(P), I). 
+    \end{alltt}
+    
+
+    In the above section, it is assumed that the robots are fully cooperative and are ``willing'' to share the generated plans with each other and the planner. If these conditions are not met the problem is classified as ``non- or partially-cooperative distributed planning''. \authorquote{} describe a solution to this problem, by proposing a distributed version of the algorithm described in \cite{son2009logic}. This approach is based on negotiation between the robots. For a detailed description of the algorithm, the author would like to refer the reader to \cite{son2018answer}.
+    
+
+%    \item dist planning $\rightarrow$ fully cooperative and non-/partially-cooperative
+ %   \item \textbf{fully cooperative dist planning}
+  %  \item fully-cooperative only works if agents are willing to share all of their information and do not compete with each other (Kiva domain e.g.)
+   % \itme The authors describe a distributed version of the centralized algorithmn, described in \cite{son2009logic}
+    %\item approach assumes that agents are able to communicat with eachother in order to negotiate (e.g. about the position they request). 
+    %\item Negotiation is important for agents to gain further knowledge, without revealing everything to a centralized unit or each other
+    
+
+\subsection{Centralized approach} \label{8:subsec:centralized}
+
+Centralized planning involves a single ``master node'' which does all the planning and coordination. The author assumes that an advantage of centralized planning would be a much simpler implementation and the avoidance of node failure\footnote{Depending on the implementation, it might be possible that in a distributed setting the planning process halts, if one robot fails.}. The centralized approach can still be implemented with ASP, however, the code will differ since it is now necessary to state which robot is meant. The example from above might look like this:  
+
+    \vspace{0.6cm}
+    
+\begin{alltt}
+   \% robot r will no longer carry pod p after drop_off event
+   \(\neg\)holds(carrying(r, P), I + 1) \(\leftarrow\) occurs(drop_off(r), I).
+   \% pod p remains at location l after it was dropped of by r
+   holds(pot_at(P, L), I + 1) \(\leftarrow\) occurs(drop_off(r), I), 
+       holds(at(r, L), I), holds(carrying(r, P), I). 
+   \% robot r cannot drop off pods that it does not carry
+   \(\leftarrow\) occurs(drop_off(r), I), \(\neg\)holds(carrying(r, P), I). 
+\end{alltt}
+
+%    \item studied a lot \cite{son2018answer}
+ %   \item tries to use one ``master node'' for planning and coordinating actions
+  %  \item We can still model this with ASP in a similar way as described above. 
+   % \item We will now have to add an extra attribute to terms, denoting which element is addressed, e.g. \verb|at(o, l)|, instead of \verb|at(l)|, with  \verb|o| denoting the object that is at location  \verb|l|. This is since we now  longer have the perspective of each object (where the affiliation of state and object is obvious), but a global view, where we have to denote which object is meant.
+
+
+
+
+
+% difference single and fully cooperative?
+% not really clear. We just assume that a sae is a simplified version of a mae
+
+
+
+\section{Conclusion} \label{8:sec:conclusion}
+
+In their paper \textit{\papertitle{}} \authorquote{} explain how single- and multi-agent planning can be approached using centralized or decentralized algorithms. To illustrate their methods \authorquote{} explain them in the context of the Kiva domain. The authors also illustrate how ASP code written for decentralized algorithms can be converted into code suitable for centralized algorithms, by adding references to the agent which experiences an event or executes an action.
+
+ %   \item \textbf{conclusion}
+  %  \item translation of dynamic domains into static programs. Translation of Single agent environments into multi-agent environments
+   % \item apply these problems using ASP encoding to Kiva robot system
+    %\item notes about implementation
+
+    
+% Procedural Content Generation touches on two problems: The creation of good artifacts and the implementation of a fast and flexible generative procedure. In their paper \textit{\papertitle} \authorquote{} provide a framework which can be used as a generative procedure for creating content generators. The strength of the framework is rooted in the power of ASP, which provides a rich language and generic, efficient solvers. 
 
 \bibliographystyle{unsrt}
 \bibliography{refs}

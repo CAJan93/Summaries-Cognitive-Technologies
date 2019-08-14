@@ -1,0 +1,157 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+\newcommand{\papertitle}{Addressing a Question Answering Challenge by Combining Statistical Methods with Inductive Rule Learning and Reasoning}
+\newcommand{\authorquote}{Mitra and Baral}
+
+\begin{document}
+
+\title{A Summary of \papertitle}
+
+\author{Jan Mensch}
+
+\authorrunning{J. Mensch}
+
+\institute{University of Potsdam\\ 
+\email{jan.mensch@uni-potsdam.de}\\}
+
+
+%
+\maketitle              % typeset the header of the contribution
+%
+
+
+
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle} \cite{mitra2016addressing}. In it, \authorquote{} describe the design and implementation of an intelligent agent which is capable of solving tasks like fact-based question-answering, simple induction or co-reference resolution. The described system utilizes ASP to solve these tasks. It does this in combination with other technologies like Natural Language Processing. The implementation presented can outperform state-of-the-art applications in (almost) all tasks. 
+\end{abstract}
+
+
+
+\section{Introduction} \label{sec:intro}
+
+
+The development of intelligent systems is a long term goal of artificial intelligent. The agent implemented by \authorquote{} shows some capabilities in this regards. It can solve various like fact-based question-answering and simple induction. This summary will focus on the former and explain the approach of \authorquote{} with the help of a running example.  
+
+
+  %  try to solve real-world problems
+  %  sate-of-the-art systems domain dependent. Difficult to measure performance
+  %  example task of knowledge-based question-answering
+
+
+\section{Approach}
+
+The approach provided in \cite{mitra2016addressing} is capable of fact-based question-answering. The facts are provided to the agent as sentences in natural language. From this input, the agent can draw conclusions and answer the stated question. The implementation provided by \authorquote{} consists of a three-layer architecture: An Abstract Meaning Representation (AMR) Parser, which uses Natural Language Processing (NLP) to create a semantic representation of the input provided \cite{banarescu2013abstract}. The second layer represents formal reasoning and is implemented in Answer Set Programming\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we refer the reader to \cite{erdem2016applications}.}. This layer also contains formalism that represents the law of inertia (that is the notion that the observed environment stays the same unless changed). The task of the third layer is to translate natural language sentences to event calculus, a logical language for reasoning about events, with the help of the AMR parser.
+
+
+With this in mind, we can now obverse how natural language is processed when passed to the intelligent agent. An example of a valid input is the following sentences. The \verb|A:| indicates the beginning of the expected answer.
+
+
+\begin{verbatim}
+    Mary grabbed the football.
+    Mary traveled to the office.
+    Mary took the apple there.
+    What is Mary carrying? A:football,apple
+    Mary left the football.
+    Daniel went back to the bedroom.
+    What is Mary carrying? A:apple
+\end{verbatim}
+
+With the help of the first layer, this input can now be parsed to Abstract Meaning Representation. The provided example is the AMR of the sentence \q{Mary grabbed the football.}
+   
+\begin{verbatim}
+    (g / grab
+        :ARG0 (p / person
+            :name (m / name :opt Mary ))
+        :ARG1 (f / football ))
+\end{verbatim}
+
+The third layer now translates the received AMR to Event Calculus. The providing encoding displays the running example in this form. It is split into two parts: The \q{narrative}, that is the observation of the events in question and the \q{annotation}, needed to answer the question \q{What is Mary carrying?}, which is also provided as part of the input. 
+
+\begin{verbatim}
+    Narrative
+    happensAt(grab(mary,football),1).
+    happensAt(travel(mary,office),2).
+    happensAt(take(mary,apple),3).
+    happensAt(leave(mary,footbal;),5).
+    happensAt(go back(daniel,bedroom),6).
+    Annotation
+    holdsAt(carry(mary,football),4).
+    holdsAt(carry(mary,apple),4).
+    holdsAt(carry(mary,apple),7).
+    not holdsAt(carry(mary,football),7)
+\end{verbatim}  
+        
+        
+        
+To learn the answer set program itself, \cite{mitra2016addressing} utilizes XHAIL \cite{ray2009nonmonotonic}. This algorithm uses Inductive Logical Programming (ILP) to formulate a hypothesis $\mathcal{H}$ and update it based on the data provided. In this context, ILP is given as  $ILP(\mathcal{B},\mathcal{E},\mathcal{M})$, where $\mathcal{B}$ is provided background knowledge and $\mathcal{E} = \{\mathcal{E}^+, \mathcal{E}^-\}$ are the positive and negative training examples. $\mathcal{M}$ is the mode, which restricts the hypothesis space, from which $\mathcal{H}$ is derived.  
+
+
+
+ 
+ 
+
+XHAIL works in three steps. It first finds ground atoms $\triangle$. These are atoms which describe the beginning and end state of the narrative. Since $\triangle$ is not unique the algorithm will expand the set of atoms step by step to receive a preferably small set. The presented atoms show the $\triangle$ for the running example
+
+    \begin{align*}
+        \triangle = 
+        \left\{ 
+        \begin{matrix}{initiatedAt(carry(mary, football), 1)} \\ 
+        {initiatedAt(carry(mary, apple), 3)} \\ 
+        {terminatedAt(carry(mary, football), 5)} 
+        \end{matrix}\right\}
+    \end{align*}
+        
+        
+Next, XHAIL will find the clauses $K$ for the calculated ground atoms $\triangle$. Each atom in $\triangle$ will be at the head of one of the clauses. This process is part of finding the hypothesis $\mathcal{H}$. Subsequently the literals in $K$ are replaced by variables resulting in the $K_v$, the ASP encoding. With this step XHAIL  induced generally valid rules from the provided examples.  
+
+        \begin{align*}
+        K_v = 
+        \left\{ 
+        \begin{matrix}{initiatedAt(carry(X, Y ), T) \leftarrow happensAt(grab(X, Y ), T).}\\
+{initiatedAt(carry(X, Y ), T) \leftarrow happensAt(take(X, Y ), T).}\\
+{terminatedAt(carry(X, Y ), T) \leftarrow happensAt(leave(X, Y ), T).}\\
+        \end{matrix}\right\}
+    \end{align*}
+        
+
+As the last step, the algorithm attempts to minimize $K_v$, that is to remove as many literals from it as possible. In the running example, $K_v$ is already minimal.
+
+
+
+% Skip path finding part
+  %  Implementation can also be used to solve a path finding problem, where a set of sentences is given and the agent is asked to provide us with directions.
+    
+% There is also Coreference resolution taks which we will also skip
+
+
+% Evaluation: Provided method outperforms the state-of-the art in all 20 tasks, except in Basic Induction. 
+
+
+% Conclusion: 
+%    adding a formal reasoning layer increases reasoning capabilities of agent
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Conclusion} \label{sec:conclusion}
+
+Developing intelligent agents is a long term goal of artificial intelligents. In the article \textit{\papertitle{}} \authorquote{} show that it is possible to develop such an agent with the help of Answer Set Programming, Natural Language Processing and Inductive Logical Programming. The resulting implementation outperforms other state-of-the-art approaches. In this paper their approach was introduced using a running example. 
+
+
+% In their article \textit{\papertitle{}} \authorquote{} show that it is possible to use ASP in a medium-sized knowledge-intensive application in a production environment. They describe the components of their system in detail and elaborate on how these module work cooperate. \authorquote{} further demonstrate how to decrease the time needed to find an answer set by pruning the search space and making use of heuristics. 
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}

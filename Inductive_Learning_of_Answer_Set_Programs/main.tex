@@ -1,0 +1,88 @@
+\documentclass[runningheads]{llncs}
+\usepackage{aspPackage}
+
+\usepackage{alltt}
+\usepackage{cite}
+\usepackage{enumitem}
+
+\newcommand{\papertitle}{Answer Set Planning in Single- and Multi-agent Environments}
+\newcommand{\authorquote}{Son \etal}
+
+\begin{document}
+
+\title{A Summary of \papertitle}
+
+\author{Jan Mensch}
+
+\authorrunning{J. Mensch}
+
+\institute{University of Potsdam\\ 
+\email{jan.mensch@uni-potsdam.de}\\}
+
+
+%
+\maketitle              % typeset the header of the contribution
+% About \textit{\papertitle}:
+% Provides both technical, tutorial solution and survey contribution
+% technical: map PCG problems to ASP
+%tutorial: introduction to ASP and code-level walkthrough of existing PCG systems.  
+% survey: review of existing ASP applications with generative purpose
+
+
+\begin{abstract}
+This is a summary of the paper \textit{\papertitle}. In it \authorquote{} describe approaches on how to solve planning and diagnostics problems in single- and and Multi-agent environments with ASP\footnote{We assume that the reader is familiar with Answer Set Programming. If that is not the case, we refer the reader to \cite{erdem2016applications}.}. Since the single-agent environment is just a simplified version of the multi-agent environment, this article will focus on the multi-agent setting. The article will summarize the findings of \authorquote{} by first giving a  short introduction planning problems in ASP (\sectionref{8:sec:introduction}) and explaining the problem domain (\sectionref{8:sec:kiva}). The article will then summarise the used approaches in the multi-agent environment (\sectionref{8:sec:environments}) and list conclusions (\sectionref{8:sec:conclusion}).
+
+\end{abstract}
+
+
+% what, how, why?
+
+
+
+\begin{itemize}
+    \item \textbf{abstract}
+    \item ILP = Inductive Logic Programming 
+    \item ILP usually applied to q{normal} logical programming languages
+    \item paper tries to apply it to ASP
+    \item Output is APS program
+    \item ILASP = Inductive Learning of Answer Set Programs
+    \item \textbf{intro}
+    \item learning task: Find hypothesis that explains observation under given data
+    \item positive examples $E^+$, negative examples $E^-$
+    \item previous approaches are too strict, meaning that each test data element should be positive???
+    \item sudoku game with 4+4 cells and numbers 1 - 4
+    \item We have to be careful not to just make create a solution that is too broad. 0{value(1, C), value(2, C), value(3, C), value(4, C)}4 ← cell(C) would always contain correct solution in answer set, but it would also have a lot of incorrect solutions. So we have to consider negative examples, too
+    \item using negative examples is 
+    \item \textbf{scip background}
+    \item \textbf{learning from Answer Sets}
+    \item In ILP taks, expressivness of hypothesis space is defined by language bias
+    \iten language bias: ???
+    \item definition Learning from Answer Set task: $T = \langle B, S_M, E^+, E^- \rangle$. $B$ is background knowledge, $S_M$ is the search space based on the language bias $M$, $E^+$ and $E^-$ are the positive and negative examples. A hypothesis $H$ is valid for $T$ if it is within the searchspace of $S_M$, every positive example is a part of a valid answer set $AS$, the answer set of $T$, and ever negative example is not part of $AS$. 
+    \item \textbf{stopped after definition 2}
+\end{itemize}
+
+\begin{itemize}
+    \item background knowledge equal to training set?
+    \item what are positive and negative examples in this context? Is a negative example equal to an invalid example?
+    \item what does $B \cup H \vDash for every e \in E^+$ mean? Does this mean that each trainingelement should be correctly classified? So we are probably overfitting?
+    \item How good were the previous approaches that ignored negative examples?
+    \item Could we discuss how the language bias works? I did not get that. 
+\end{itemize}
+
+
+\section{Conclusion} \label{8:sec:conclusion}
+
+In their paper \textit{\papertitle{}} \authorquote{} explain how single- and multi-agent planning can be approached using centralized or decentralized algorithms. To illustrate their methods \authorquote{} explain them in the context of the Kiva domain. The authors also illustrate how ASP code written for decentralized algorithms can be converted into code suitable for centralized algorithms, by adding references to the agent which experiences an event or executes an action.
+
+ %   \item \textbf{conclusion}
+  %  \item translation of dynamic domains into static programs. Translation of Single agent environments into multi-agent environments
+   % \item apply these problems using ASP encoding to Kiva robot system
+    %\item notes about implementation
+
+    
+% Procedural Content Generation touches on two problems: The creation of good artifacts and the implementation of a fast and flexible generative procedure. In their paper \textit{\papertitle} \authorquote{} provide a framework which can be used as a generative procedure for creating content generators. The strength of the framework is rooted in the power of ASP, which provides a rich language and generic, efficient solvers. 
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
